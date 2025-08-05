@@ -25,7 +25,6 @@ class MainClass():
     def call_to_notion(self, config):
         from swarmautomations.modules.call_recording_pipeline import CallRecordingPipelineClass
         ################################################################################################################
-        recordings_dir = config['recordings_path']
         ################################################################################################################
         CallRecordingPipelineClass().run()
         return config
