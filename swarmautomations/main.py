@@ -1,5 +1,5 @@
 from eigenlib.utils.project_setup import ProjectSetupClass
-ProjectSetupClass(project_name='swarmintelligence', app_name='automations')
+ProjectSetupClass(project_folder='swarm-automations')
 
 class MainClass():
     def __init__(self, config):
@@ -17,13 +17,13 @@ class MainClass():
         return config
 
     def standby(self, config):
-        from swarmintelligence.automations_app.modules.standby import StandbyClass
+        from swarmautomations.modules.standby import StandbyClass
         ################################################################################################################
         monitor = StandbyClass(timeout=45)
         monitor.run()
 
     def call_to_notion(self, config):
-        from swarmintelligence.automations_app.modules.call_recording_pipeline import CallRecordingPipelineClass
+        from swarmautomations.modules.call_recording_pipeline import CallRecordingPipelineClass
         ################################################################################################################
         recordings_dir = config['recordings_path']
         ################################################################################################################
@@ -75,7 +75,7 @@ class MainClass():
         from eigenlib.utils.youtube_utils import YoutubeUtilsClass
         from eigenlib.audio.oai_whisper_stt import OAIWhisperSTTClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
-        from swarmintelligence.automations_app.modules.automatic_summarizer import SourceSummarizationClass
+        from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         ################################################################################################################
         video_url = config['yttn_video_url']
         notion_page = config['yttn_notion_page']
@@ -96,7 +96,7 @@ class MainClass():
         return config
 
     def source_to_notion_summary(self):
-        from swarmintelligence.automations_app.modules.automatic_summarizer import SourceSummarizationClass
+        from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
         ################################################################################################################
         source = config['source']

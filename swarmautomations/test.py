@@ -42,7 +42,7 @@ class TestMain(unittest.TestCase):
         print('CURATED: ', os.listdir('./data/curated'))
 
         # CURATED SOURCEs
-        input_dataset_name = config['vdb_name']
+        input_dataset_name = 'test_dataset'
         df = DataUtilsClass().load_dataset(path=os.environ['CURATED_DATA_PATH'], dataset_name=input_dataset_name, format='pkl', cloud=False)
         input_dataset_name = config['seeds_dataset_name']
         df = DataUtilsClass().load_dataset(path=os.environ['CURATED_DATA_PATH'], dataset_name=input_dataset_name, format='csv', cloud=False)
@@ -68,8 +68,8 @@ class TestMain(unittest.TestCase):
         print(answer)
 
     def test_security_node(self):
-        from swarmintelligence.automations_app.main import MainClass
-        from swarmintelligence.automations_app.config import active_config as config
+        from swarmautomations.main import MainClass
+        from swarmautomations.config import active_config as config
         from eigenlib.utils.encryption_utils import EncryptionUtilsClass
         ################################################################################################################
         EU = EncryptionUtilsClass()
@@ -80,14 +80,13 @@ class TestMain(unittest.TestCase):
         config['node_call_payload'] = {'public_key':public_key}
         config['password'] = None
         ################################################################################################################
-        print('Ensure the server is up.')
+        print('Ensure the server is up and introduce password.')
         main = MainClass(config)
         config = main.call_personal_server_node(config)
         print(config['result'])
 
     #TEST UNDER DEVELOPMENT###################################################################################################################
     def test_under_development(self):
-
         pass
 
 
