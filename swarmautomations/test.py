@@ -1,8 +1,8 @@
 import unittest
-from swarmintelligence.automations_app.main import MainClass
-from swarmintelligence.automations_app.config import active_config as config
+from swarmautomations.main import MainClass
+from swarmautomations.config import active_config as config
 from eigenlib.utils.project_setup import ProjectSetupClass
-ProjectSetupClass(project_name='swarmintelligence', app_name='automations')
+ProjectSetupClass(project_folder='swarm-automations', test_environ=True)
 
 class TestMain(unittest.TestCase):
     def setUp(self):
