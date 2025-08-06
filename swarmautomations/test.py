@@ -40,10 +40,11 @@ class TestMain(unittest.TestCase):
             EU = EncryptionUtilsClass()
             from dotenv import dotenv_values
             env_vars = str(dotenv_values('C:\\Users\\AlejandroPrendesCabo\\Desktop\\.env'))
+            env_vars = 'Hola'
             encrypted_password = EU.encrypt_pass(env_vars, public_key)
             return encrypted_password
         self.config['node_method'] = encryption_aux
-        self.config['master_address'] = 'tcp://localhost:5000'
+        self.config['master_address'] = 'tcp://localhost:5005'
         self.config['node_name'] = 'security_node'
         self.config['password'] = 'test_pass'
         self.main.launch_personal_server_node(self.config)
@@ -94,8 +95,58 @@ class TestMain(unittest.TestCase):
         print(answer)
 
     #TEST UNDER DEVELOPMENT###################################################################################################################
-    def test_under_development(self):
+    def test_launch_server_script(self):
+        import time
+        from swarmautomations.main import MainClass
+        from swarmautomations.config import active_config as config
+        ################################################################################################################
+        config['password'] = 'youshallnotpass'
+        config['master_address'] = 'tcp://localhost:5005'
+        ################################################################################################################
+        main = MainClass(config)
+        main.launch_personal_server(config)
+        while True:
+            time.sleep(1)
+
+    def test_launch_security_node(self):
+        import os
+        import sys
+        from swarmautomations.main import MainClass
+        from swarmautomations.config import active_config as config
+        import time
+        # Forzar UTF-8 en Windows
+        if sys.platform == 'win32':
+            os.environ['PYTHONIOENCODING'] = 'utf-8'
+        ################################################################################################################
+        def encryption_aux(public_key):
+            from eigenlib.utils.encryption_utils import EncryptionUtilsClass
+            EU = EncryptionUtilsClass()
+            from dotenv import dotenv_values
+            env_vars = str(dotenv_values(r'C:\Users\apren\Desktop\.env'))
+            encrypted_vars = EU.encrypt_pass(env_vars, public_key)
+            return encrypted_vars
+        config['node_method'] = encryption_aux
+        config['node_ip'] = 'tcp://95.18.166.44:5005'
+        config['node_name'] = 'security_node'
+        config['password'] = 'youshallnotpass'
+        ################################################################################################################
+        main = MainClass(config)
+        print('Security server started.')
+        main.launch_personal_server_node(config)
+        while True:
+            time.sleep(1)
         pass
+
+    def test_call_security_node(self):
+        from eigenlib.utils.encryption_utils import EncryptionUtilsClass
+        ################################################################################################################
+        EU = EncryptionUtilsClass()
+        public_key = EU.initialize()
+        self.config['address_node_name'] = 'security_node'
+        self.config['payload'] = {'public_key':public_key}
+        self.config['password'] = 'youshallnotpass'
+        ################################################################################################################
+        output_config = self.main.call_personal_server_node(self.config)
 
 
 if __name__ == '__main__':

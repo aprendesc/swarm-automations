@@ -33,7 +33,7 @@ active_config = {
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
 
             # PERSONAL NET
-            'master_address': 'tcp://localhost:5000',
+            'master_address': 'tcp://localhost:5005',
             'password': 'test_pass',
 
             #LAUNCH PERSONAL SERVER NODE
