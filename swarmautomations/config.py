@@ -32,18 +32,17 @@ active_config = {
             'max_iter': 15,
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
 
-            # LAUNCH PERSONAL
-            'password': 's3cr3t!',
-            'port': 5005,
+            # PERSONAL NET
+            'master_address': 'tcp://localhost:5000',
+            'password': 'test_pass',
 
             #LAUNCH PERSONAL SERVER NODE
-            'node_ip': '127.0.0.1',
-            'node_name': 'test_node',
+            'node_name': 'security_node',
             'node_method': lambda a, b: a + b,
 
             # CALL PERSONAL NODE
-            'address_node_name': 'test_node',
-            'node_call_payload': {'a': 1, 'b':2}
+            'address_node': 'security_node',
+            'payload': {'a': 1, 'b':2}
                 }
 
 ########################################################################################################################

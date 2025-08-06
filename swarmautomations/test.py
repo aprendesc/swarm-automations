@@ -1,4 +1,7 @@
 import unittest
+
+import pandas as pd
+
 from swarmautomations.main import MainClass
 from swarmautomations.config import active_config as config
 from eigenlib.utils.project_setup import ProjectSetupClass
@@ -27,11 +30,34 @@ class TestMain(unittest.TestCase):
     def test_podcast_generation(self):
         updated_config = self.main.podcast_generation(self.config)
 
-    def test_launch_personal_server(self):
+    def test_security_server_full_cycle(self):
+        #LAUNCH SERVER
+        self.config['password'] = 'test_pass'
         self.main.launch_personal_server(self.config)
+        #LAUNCH SECURITY NODE
+        def encryption_aux(public_key):
+            from eigenlib.utils.encryption_utils import EncryptionUtilsClass
+            EU = EncryptionUtilsClass()
+            password = 'Tu160Blackjack'
+            encrypted_password = EU.encrypt_pass(password, public_key)
+            return encrypted_password
+        self.config['node_method'] = encryption_aux
+        self.config['master_address'] = 'tcp://localhost:5000'
+        self.config['node_name'] = 'security_node'
+        self.config['password'] = 'test_pass'
         self.main.launch_personal_server_node(self.config)
-        config = self.main.call_personal_server_node(self.config)
-        print(config['result'])
+        #CALL SECURITY SERVER
+        from eigenlib.utils.encryption_utils import EncryptionUtilsClass
+        ################################################################################################################
+        EU = EncryptionUtilsClass()
+        public_key = EU.initialize()
+        ################################################################################################################
+        self.config['address_node_name'] = 'security_node'
+        self.config['payload'] = {'public_key':public_key}
+        self.config['password'] = 'test_pass'
+        ################################################################################################################
+        output_config = self.main.call_personal_server_node(self.config)
+        print(output_config['response'])
 
     #-------------------------------------------------------------------------------------------------------------------
     def test_datasets_load(self):
@@ -52,38 +78,19 @@ class TestMain(unittest.TestCase):
     def test_call_served_LLM(self):
         class OSLLMClientClass:
             def __init__(self):
-                from eigenlib.utils.general_purpose_net import GeneralPurposeNetClass
-                node_ip = '95.18.166.44'
-                port = 5005
+                from eigenlib.utils.nano_net import NanoNetClass
+                master_address = 'tcp://95.18.166.44:5000'
                 password = 'youshallnotpass'
                 ################################################################################################################
-                self.client_node = GeneralPurposeNetClass()
-                self.client_node.start_node(node_name="client_node", server_address=node_ip + ":" + str(port), password=password, method=lambda a, b: a + b)
+                self.client_node = NanoNetClass()
+                self.client_node.launch_node(node_name='client_node', node_method=None, master_address=master_address, password=password, delay=1)
 
             def run(self, history):
-                result = self.client_node.call_node("phi4-serving", {'history': history})
+                result = self.client_node.call(address_node="phi4-serving", payload={'history': history})
                 return result
         LLM = OSLLMClientClass()
         answer = LLM.run([{'role': 'user', 'content': 'De que color es el caballo blanco de santiago?'}])
         print(answer)
-
-    def test_security_node(self):
-        from swarmautomations.main import MainClass
-        from swarmautomations.config import active_config as config
-        from eigenlib.utils.encryption_utils import EncryptionUtilsClass
-        ################################################################################################################
-        EU = EncryptionUtilsClass()
-        public_key = EU.initialize()
-        ################################################################################################################
-        config['node_ip'] = '95.18.166.44'
-        config['address_node_name'] = 'security_node'
-        config['node_call_payload'] = {'public_key':public_key}
-        config['password'] = None
-        ################################################################################################################
-        print('Ensure the server is up and introduce password.')
-        main = MainClass(config)
-        config = main.call_personal_server_node(config)
-        print(config['result'])
 
     #TEST UNDER DEVELOPMENT###################################################################################################################
     def test_under_development(self):
@@ -92,6 +99,3 @@ class TestMain(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-

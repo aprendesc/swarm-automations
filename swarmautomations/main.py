@@ -228,40 +228,39 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
 
     """Personal server"""
     def launch_personal_server(self, config):
-        from eigenlib.utils.general_purpose_net import GeneralPurposeNetClass
+        from eigenlib.utils.nano_net import NanoNetClass
         ################################################################################################################
-        port = config['port']
+        master_address = config['master_address']
         password = config['password']
         ################################################################################################################
-        server = GeneralPurposeNetClass()
-        server.start_server(port=port, password=password)
+        master = NanoNetClass()
+        master.launch_master(master_address=master_address, password=password)
         return config
 
     def launch_personal_server_node(self, config):
-        from eigenlib.utils.general_purpose_net import GeneralPurposeNetClass
+        from eigenlib.utils.nano_net import NanoNetClass
         ################################################################################################################
-        node_ip = config['node_ip']
-        port = config['port']
         node_name = config['node_name']
-        node_method = config['node_method']
+        master_address = config['master_address']
         password = config['password']
+        node_method = config['node_method']
         ################################################################################################################
-        nodeA = GeneralPurposeNetClass()
-        nodeA.start_node(node_name=node_name, server_address=node_ip+":"+str(port), password=password, method=node_method)
+        security_node = NanoNetClass()
+        security_node.launch_node(node_name=node_name, node_method=node_method, master_address=master_address, password=password, delay=1)
         return config
 
     def call_personal_server_node(self, config):
-        from eigenlib.utils.general_purpose_net import GeneralPurposeNetClass
+        from eigenlib.utils.nano_net import NanoNetClass
         ################################################################################################################
-        node_ip = config['node_ip']
-        port = config['port']
-        address_node_name = config['address_node_name']
-        node_call_payload = config['node_call_payload']
+        master_address = config['master_address']
         password = config['password']
+        payload = config['payload']
+        address_node = config['address_node']
         ################################################################################################################
-        client_node = GeneralPurposeNetClass()
-        client_node.start_node(node_name="client_node", server_address=node_ip+":"+str(port), password=password, method=lambda a, b: a + b)
-        config['result'] = client_node.call_node(address_node_name, node_call_payload)
+        client_node = NanoNetClass()
+        client_node.launch_node(node_name='client_node', node_method=None, master_address=master_address, password=password, delay=1)
+        response = client_node.call(address_node=address_node, payload=payload)
+        config['response'] = response
         client_node.stop()
         return config
 
