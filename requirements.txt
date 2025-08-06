@@ -32,7 +32,3 @@ sounddevice
 soundfile
 notion_client
 psutil
-git+https://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@github.com/aprendesc/eigenlib.git
-git+https://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@github.com/aprendesc/swarm-intelligence.git
-git+https://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@github.com/aprendesc/swarm-automations.git
-git+https://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@github.com/aprendesc/swarm-ml.git
