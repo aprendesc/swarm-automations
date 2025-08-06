@@ -38,8 +38,9 @@ class TestMain(unittest.TestCase):
         def encryption_aux(public_key):
             from eigenlib.utils.encryption_utils import EncryptionUtilsClass
             EU = EncryptionUtilsClass()
-            password = 'Tu160Blackjack'
-            encrypted_password = EU.encrypt_pass(password, public_key)
+            from dotenv import dotenv_values
+            env_vars = str(dotenv_values('C:\\Users\\AlejandroPrendesCabo\\Desktop\\.env'))
+            encrypted_password = EU.encrypt_pass(env_vars, public_key)
             return encrypted_password
         self.config['node_method'] = encryption_aux
         self.config['master_address'] = 'tcp://localhost:5000'
