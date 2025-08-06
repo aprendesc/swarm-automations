@@ -266,7 +266,7 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
         return config
 
 if __name__ == '__main__':
-    from swarmintelligence.automations_app.config import active_config as config
+    from swarmautomations.config import active_config as config
     main = MainClass(config)
     #main.computer_use_automation(config)
     main.standby(config)
