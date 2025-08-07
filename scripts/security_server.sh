@@ -4,7 +4,8 @@ source .venv/Scripts/activate
 export PYTHONUNBUFFERED=1
 python -c "
 import time
-from swarmautomations.main import NanoNetMainClass
+from swarmautomations.main import MainClass
+from swarmautomations.config import test_config as config
 ################################################################################################################
 def encryption_aux(public_key):
 	from cryptography.fernet import Fernet
@@ -21,7 +22,7 @@ config = {
 	'delay': 5,
 		}
 ################################################################################################################
-main = NanoNetMainClass(config)
+main = MainClass(config)
 print('Security server started.')
 main.launch_personal_server_node(config)
 while True:

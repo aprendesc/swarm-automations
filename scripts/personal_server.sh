@@ -4,7 +4,7 @@ source .venv/Scripts/activate
 export PYTHONUNBUFFERED=1
 python -c "
 import time
-from swarmautomations.main import NanoNetMainClass
+from swarmautomations.main import MainClass
 from eigenlib.utils.nano_net import NanoNetClass
 ################################################################################################################
 config = {
@@ -13,7 +13,7 @@ config = {
 	}
 ################################################################################################################
 NanoNetClass.kill_processes_on_port(5005)
-main=NanoNetMainClass(config)
+main=MainClass(config)
 main.launch_personal_server(config)
 while True:
 	time.sleep(1)

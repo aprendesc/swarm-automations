@@ -1,10 +1,11 @@
 from eigenlib.utils.project_setup import ProjectSetupClass
 ProjectSetupClass(project_folder='swarm-automations')
 
-class AutomationsMainClass():
+class MainClass():
     def __init__(self, config):
         pass
 
+    """Automations"""
     def computer_use_automation(self, config):
         from eigenlib.LLM.computer_use_tools import ComputerUseClass
         ################################################################################################################
@@ -94,7 +95,7 @@ class AutomationsMainClass():
         NU.write(page_id=notion_page, texto='* ' + transcription)
         return config
 
-    def source_to_notion_summary(self):
+    def source_to_notion_summary(self, config):
         from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
         ################################################################################################################
@@ -226,10 +227,6 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
         video.write_videofile(output_path, fps=fps, codec="libx264", audio_codec="aac")
         return config
 
-class NanoNetMainClass():
-    def __init__(self, config):
-        pass
-
     """Personal server"""
     def launch_personal_server(self, config):
         from eigenlib.utils.nano_net import NanoNetClass
@@ -271,8 +268,8 @@ class NanoNetMainClass():
         return config
 
 if __name__ == '__main__':
-    from swarmautomations.config import active_config as config
-    main = AutomationsMainClass(config)
+    from swarmautomations.config import test_config as config
+    main = MainClass(config)
     #main.computer_use_automation(config)
     main.standby(config)
     #main.call_to_notion(config)
@@ -280,8 +277,6 @@ if __name__ == '__main__':
     #main.youtube_to_notion(config)
     #main.source_to_notion_summary(config)
     #main.generate_podcast(config)
-
-    main = NanoNetMainClass(config)
     #main.launch_personal_server(config)
     #main.launch_personal_server_node(config)
     #main.call_personal_server_node(config)

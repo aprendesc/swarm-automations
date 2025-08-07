@@ -1,7 +1,7 @@
 
 ########################################################################################################################
 hypothesis = """Automations app"""
-automations_test_config = {
+test_config = {
             'hypothesis': hypothesis,
             #COMPUTER USE
             'instructions': """Open google chrome. Look for the weather in Alpedrete (Madrid) using the web browser and give me the weather for the next sunday. Say OBJECTIVE ACCOMPLISHED when you finish.""",
@@ -29,12 +29,7 @@ automations_test_config = {
             # GENERATE_PODCAST
             'max_iter': 15,
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
-    }
 
-########################################################################################################################
-hypothesis = """Base search engine setup"""
-nano_net_test_config = {
-            'hypothesis': hypothesis,
             # NANO NET
             'master_address': 'tcp://localhost:5005',
             'password': 'test_pass',

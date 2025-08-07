@@ -5,8 +5,8 @@ export PYTHONUNBUFFERED=1
 python -c "
 import os
 import pandas as pd
-from swarmautomations.main import AutomationsMainClass
-from swarmautomations.config import automations_test_config as config
-main=AutomationsMainClass(config)
+from swarmautomations.main import MainClass
+from swarmautomations.config import test_config as config
+main=MainClass(config)
 main.listen_smartwatch_notes(config)
 "
