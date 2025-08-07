@@ -4,7 +4,7 @@ from swarmautomations.config import test_config as config
 from eigenlib.utils.project_setup import ProjectSetupClass
 ProjectSetupClass(project_folder='swarm-automations', test_environ=True)
 
-class TestAutomationsMainClass(unittest.TestCase):
+class TestMainClass(unittest.TestCase):
     def setUp(self):
         self.main = MainClass(config)
         self.config = config
