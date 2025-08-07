@@ -1,7 +1,7 @@
 from eigenlib.utils.project_setup import ProjectSetupClass
 ProjectSetupClass(project_folder='swarm-automations')
 
-class MainClass():
+class AutomationsMainClass():
     def __init__(self, config):
         pass
 
@@ -226,6 +226,10 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
         video.write_videofile(output_path, fps=fps, codec="libx264", audio_codec="aac")
         return config
 
+class NanoNetMainClass():
+    def __init__(self, config):
+        pass
+
     """Personal server"""
     def launch_personal_server(self, config):
         from eigenlib.utils.nano_net import NanoNetClass
@@ -268,7 +272,7 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
 
 if __name__ == '__main__':
     from swarmautomations.config import active_config as config
-    main = MainClass(config)
+    main = AutomationsMainClass(config)
     #main.computer_use_automation(config)
     main.standby(config)
     #main.call_to_notion(config)
@@ -276,6 +280,8 @@ if __name__ == '__main__':
     #main.youtube_to_notion(config)
     #main.source_to_notion_summary(config)
     #main.generate_podcast(config)
+
+    main = NanoNetMainClass(config)
     #main.launch_personal_server(config)
     #main.launch_personal_server_node(config)
     #main.call_personal_server_node(config)

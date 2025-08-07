@@ -1,10 +1,8 @@
 
 ########################################################################################################################
-"""Config v0"""
-hypothesis = """Base search engine setup"""
-version = '_v0'
-preowned = True
-active_config = {
+hypothesis = """Automations app"""
+automations_test_config = {
+            'hypothesis': hypothesis,
             #COMPUTER USE
             'instructions': """Open google chrome. Look for the weather in Alpedrete (Madrid) using the web browser and give me the weather for the next sunday. Say OBJECTIVE ACCOMPLISHED when you finish.""",
             'model': "computer-use-preview",
@@ -31,18 +29,23 @@ active_config = {
             # GENERATE_PODCAST
             'max_iter': 15,
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
+    }
 
-            # PERSONAL NET
+########################################################################################################################
+hypothesis = """Base search engine setup"""
+nano_net_test_config = {
+            'hypothesis': hypothesis,
+            # NANO NET
             'master_address': 'tcp://localhost:5005',
             'password': 'test_pass',
 
-            #LAUNCH PERSONAL SERVER NODE
-            'node_name': 'security_node',
+            #LAUNCH NANO NET  NODE
+            'node_name': 'test_node',
             'node_method': lambda a, b: a + b,
             'delay': 1,
 
             # CALL PERSONAL NODE
-            'address_node': 'security_node',
+            'address_node': 'test_node',
             'payload': {'a': 1, 'b':2}
                 }
 
