@@ -88,11 +88,12 @@ class TestMain(unittest.TestCase):
     def test_launch_server_script(self):
         import time
         from swarmautomations.main import MainClass
-        from swarmautomations.config import active_config as config
         from eigenlib.utils.nano_net import NanoNetClass
         ################################################################################################################
-        config['password'] = 'test_pass'
-        config['master_address'] = 'tcp://localhost:5005'
+        config = {
+            'password': 'youshallnotpass',
+            'master_address': 'tcp://0.0.0.0:5005'
+        }
         ################################################################################################################
         NanoNetClass.kill_processes_on_port(5005)
         main = MainClass(config)
