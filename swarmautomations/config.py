@@ -39,6 +39,7 @@ active_config = {
             #LAUNCH PERSONAL SERVER NODE
             'node_name': 'security_node',
             'node_method': lambda a, b: a + b,
+            'delay': 1,
 
             # CALL PERSONAL NODE
             'address_node': 'security_node',

@@ -244,9 +244,10 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
         master_address = config['master_address']
         password = config['password']
         node_method = config['node_method']
+        delay = config['delay']
         ################################################################################################################
         security_node = NanoNetClass()
-        security_node.launch_node(node_name=node_name, node_method=node_method, master_address=master_address, password=password, delay=1)
+        security_node.launch_node(node_name=node_name, node_method=node_method, master_address=master_address, password=password, delay=delay)
         return config
 
     def call_personal_server_node(self, config):
@@ -256,9 +257,10 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
         password = config['password']
         payload = config['payload']
         address_node = config['address_node']
+        delay = config['delay']
         ################################################################################################################
         client_node = NanoNetClass()
-        client_node.launch_node(node_name='client_node', node_method=None, master_address=master_address, password=password, delay=1)
+        client_node.launch_node(node_name='client_node', node_method=None, master_address=master_address, password=password, delay=delay)
         response = client_node.call(address_node=address_node, payload=payload)
         config['response'] = response
         client_node.stop()

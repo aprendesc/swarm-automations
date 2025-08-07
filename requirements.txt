@@ -21,6 +21,7 @@ pynput
 keyboard
 soundcard
 yt-dlp
+zmq
 #EIGENLIB
 fpdf
 pygame

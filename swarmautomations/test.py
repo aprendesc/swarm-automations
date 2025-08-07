@@ -27,35 +27,25 @@ class TestMain(unittest.TestCase):
     def test_youtube_to_notion(self):
         self.main.youtube_to_notion(self.config)
 
+    @unittest.skip("Slow test")
     def test_podcast_generation(self):
         updated_config = self.main.podcast_generation(self.config)
 
-    def test_security_server_full_cycle(self):
+    def test_personal_server_full_cycle(self):
         #LAUNCH SERVER
         self.config['password'] = 'test_pass'
         self.main.launch_personal_server(self.config)
         #LAUNCH SECURITY NODE
-        def encryption_aux(public_key):
-            from eigenlib.utils.encryption_utils import EncryptionUtilsClass
-            EU = EncryptionUtilsClass()
-            from dotenv import dotenv_values
-            env_vars = str(dotenv_values('C:\\Users\\AlejandroPrendesCabo\\Desktop\\.env'))
-            env_vars = 'Hola'
-            encrypted_password = EU.encrypt_pass(env_vars, public_key)
-            return encrypted_password
-        self.config['node_method'] = encryption_aux
+        def aux_fun(a, b):
+            return a + b
+        self.config['node_method'] = aux_fun
         self.config['master_address'] = 'tcp://localhost:5005'
         self.config['node_name'] = 'security_node'
         self.config['password'] = 'test_pass'
         self.main.launch_personal_server_node(self.config)
         #CALL SECURITY SERVER
-        from eigenlib.utils.encryption_utils import EncryptionUtilsClass
-        ################################################################################################################
-        EU = EncryptionUtilsClass()
-        public_key = EU.initialize()
-        ################################################################################################################
         self.config['address_node_name'] = 'security_node'
-        self.config['payload'] = {'public_key':public_key}
+        self.config['payload'] = {'a':1, 'b':2}
         self.config['password'] = 'test_pass'
         ################################################################################################################
         output_config = self.main.call_personal_server_node(self.config)
@@ -99,54 +89,66 @@ class TestMain(unittest.TestCase):
         import time
         from swarmautomations.main import MainClass
         from swarmautomations.config import active_config as config
+        from eigenlib.utils.nano_net import NanoNetClass
         ################################################################################################################
-        config['password'] = 'youshallnotpass'
+        config['password'] = 'test_pass'
         config['master_address'] = 'tcp://localhost:5005'
         ################################################################################################################
+        NanoNetClass.kill_processes_on_port(5005)
         main = MainClass(config)
         main.launch_personal_server(config)
         while True:
             time.sleep(1)
 
     def test_launch_security_node(self):
-        import os
-        import sys
         from swarmautomations.main import MainClass
-        from swarmautomations.config import active_config as config
         import time
-        # Forzar UTF-8 en Windows
-        if sys.platform == 'win32':
-            os.environ['PYTHONIOENCODING'] = 'utf-8'
         ################################################################################################################
         def encryption_aux(public_key):
-            from eigenlib.utils.encryption_utils import EncryptionUtilsClass
-            EU = EncryptionUtilsClass()
+            from cryptography.fernet import Fernet
             from dotenv import dotenv_values
-            env_vars = str(dotenv_values(r'C:\Users\apren\Desktop\.env'))
-            encrypted_vars = EU.encrypt_pass(env_vars, public_key)
+            encryption = Fernet(public_key)
+            env_vars = dotenv_values(r'C:\Users\apren\Desktop\.env')
+            encrypted_vars = {k: encryption.encrypt(v.encode()).decode() for k, v in env_vars.items()}
             return encrypted_vars
-        config['node_method'] = encryption_aux
-        config['node_ip'] = 'tcp://95.18.166.44:5005'
-        config['node_name'] = 'security_node'
-        config['password'] = 'youshallnotpass'
+        config = {
+            'node_method': encryption_aux,
+            'master_address': 'tcp://95.18.166.44:5005',
+            'node_name': 'security_node',
+            'password': 'youshallnotpass',
+            'delay': 5,
+        }
         ################################################################################################################
         main = MainClass(config)
         print('Security server started.')
         main.launch_personal_server_node(config)
         while True:
             time.sleep(1)
-        pass
 
     def test_call_security_node(self):
-        from eigenlib.utils.encryption_utils import EncryptionUtilsClass
+        from swarmautomations.main import MainClass
+        from cryptography.fernet import Fernet
         ################################################################################################################
-        EU = EncryptionUtilsClass()
-        public_key = EU.initialize()
-        self.config['address_node_name'] = 'security_node'
-        self.config['payload'] = {'public_key':public_key}
-        self.config['password'] = 'youshallnotpass'
+        public_key = Fernet.generate_key()
+        config = {
+            'master_address': 'tcp://95.18.166.44:5005',
+            'payload': {'public_key': public_key},
+            'password': 'youshallnotpass',
+            'address_node': 'security_node',
+            'delay': 5,
+        }
         ################################################################################################################
-        output_config = self.main.call_personal_server_node(self.config)
+        main = MainClass(config)
+        output_config = main.call_personal_server_node(config)
+        encrypted_vars = output_config['response']
+        f = Fernet(public_key)
+        env_vars = {k: f.decrypt(v.encode()).decode() for k, v in encrypted_vars.items()}
+
+        def save_env_dict(env_vars, filepath='.env'):
+            with open(filepath, 'w') as f:
+                for key, value in env_vars.items():
+                    f.write(f'{key}={value}\n')
+        save_env_dict(env_vars, filepath='.env')
 
 
 if __name__ == '__main__':
