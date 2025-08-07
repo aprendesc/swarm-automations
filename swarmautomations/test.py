@@ -98,7 +98,6 @@ class TestAutomationsMainClass(unittest.TestCase):
         encrypted_vars = output_config['response']
         f = Fernet(public_key)
         env_vars = {k: f.decrypt(v.encode()).decode() for k, v in encrypted_vars.items()}
-
         def save_env_dict(env_vars, filepath='.env'):
             with open(filepath, 'w') as f:
                 for key, value in env_vars.items():
