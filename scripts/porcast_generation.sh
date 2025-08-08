@@ -7,6 +7,8 @@ import os
 import pandas as pd
 from swarmautomations.main import MainClass
 from swarmautomations.config import active_config as config
+from eigenlib.utils.project_setup import ProjectSetupClass
+ProjectSetupClass(project_folder='swarm-automations')
 path = 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-intelligence-project/data/raw/source_papers'
 files = os.listdir(path)
 print(pd.Series(files))

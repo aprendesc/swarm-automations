@@ -6,6 +6,8 @@ python -c "
 import time
 from swarmautomations.main import MainClass
 from eigenlib.utils.nano_net import NanoNetClass
+from eigenlib.utils.project_setup import ProjectSetupClass
+ProjectSetupClass(project_folder='swarm-automations')
 ################################################################################################################
 config = {
 	'password':'youshallnotpass',

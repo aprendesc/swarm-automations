@@ -4,6 +4,8 @@ source .venv/Scripts/activate
 export PYTHONUNBUFFERED=1
 python -c "
 from swarmautomations.main import MainClass
+from eigenlib.utils.project_setup import ProjectSetupClass
+ProjectSetupClass(project_folder='swarm-automations')
 from swarmautomations.config import test_config as config
 main=AutomationsMainClass(config)
 main.standby(config)

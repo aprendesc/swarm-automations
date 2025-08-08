@@ -6,6 +6,8 @@ python -c "
 import time
 from swarmautomations.main import MainClass
 from swarmautomations.config import test_config as config
+from eigenlib.utils.project_setup import ProjectSetupClass
+ProjectSetupClass(project_folder='swarm-automations')
 ################################################################################################################
 def encryption_aux(public_key):
 	from cryptography.fernet import Fernet

@@ -6,6 +6,7 @@ python -c "
 import os
 import pandas as pd
 from eigenlib.utils.project_setup import ProjectSetupClass
+ProjectSetupClass(project_folder='swarm-automations')
 from swarmautomations.main import MainClass
 from swarmautomations.config import test_config as config
 main=MainClass(config)

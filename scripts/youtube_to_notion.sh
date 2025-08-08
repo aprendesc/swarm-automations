@@ -5,6 +5,8 @@ export PYTHONUNBUFFERED=1
 python -c "
 from swarmautomations.main import MainClass
 from swarmautomations.config import test_config as config
+from eigenlib.utils.project_setup import ProjectSetupClass
+ProjectSetupClass(project_folder='swarm-automations')
 config['yttn_video_url'] = input('VIDEO URL:')
 config['yttn_summarize'] = 'y'==input('SUMMARIZE?(y/n):')
 if config['yttn_summarize']:

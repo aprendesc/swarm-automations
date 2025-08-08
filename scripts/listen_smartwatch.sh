@@ -7,6 +7,8 @@ import os
 import pandas as pd
 from swarmautomations.main import MainClass
 from swarmautomations.config import test_config as config
+from eigenlib.utils.project_setup import ProjectSetupClass
+ProjectSetupClass(project_folder='swarm-automations')
 main=MainClass(config)
 main.listen_smartwatch_notes(config)
 "
