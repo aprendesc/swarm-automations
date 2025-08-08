@@ -81,6 +81,7 @@ class MainClass():
         notion_page = config['yttn_notion_page']
         summarize = config['yttn_summarize']
         n_sections = config['yttn_n_sections']
+        video_url = 'https://www.youtube.com/watch?v=LyO22mTPE-E'
         ################################################################################################################
         youtube_utils = YoutubeUtilsClass(quiet=False)
         whisper_model = OAIWhisperSTTClass()
@@ -95,7 +96,7 @@ class MainClass():
         NU.write(page_id=notion_page, texto='* ' + transcription)
         return config
 
-    def source_to_notion_summary(self, config):
+    def source_to_notion_summary(self):
         from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
         ################################################################################################################
