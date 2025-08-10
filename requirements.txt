@@ -33,3 +33,4 @@ sounddevice
 soundfile
 notion_client
 psutil
+crawl4ai
