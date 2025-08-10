@@ -17,7 +17,7 @@ class MainClass():
     def standby(self, config):
         from swarmautomations.modules.standby import StandbyClass
         ################################################################################################################
-        monitor = StandbyClass(timeout=45)
+        monitor = StandbyClass(interval=5, radius=50, steps=64)
         monitor.run()
 
     def call_to_notion(self, config):
