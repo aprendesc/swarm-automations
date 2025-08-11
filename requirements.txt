@@ -34,3 +34,11 @@ soundfile
 notion_client
 psutil
 crawl4ai
+googlesearch-python
+reportlab
+catboost
+optuna
+tabulate
+tensorflow
+lightgbm
+asciichartpy

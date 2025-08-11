@@ -3,6 +3,14 @@ class MainClass():
         pass
 
     """Automations"""
+    def standby(self, config):
+        from swarmautomations.modules.standby import StandbyClass
+        ################################################################################################################
+        time_interval = config['time_interval']
+        ################################################################################################################
+        monitor = StandbyClass(interval=time_interval, radius=50, steps=64)
+        monitor.run()
+
     def computer_use_automation(self, config):
         from eigenlib.LLM.computer_use_tools import ComputerUseClass
         ################################################################################################################
@@ -13,12 +21,6 @@ class MainClass():
         CUA = ComputerUseClass()
         CUA.run(continue_action, instructions, model)
         return config
-
-    def standby(self, config):
-        from swarmautomations.modules.standby import StandbyClass
-        ################################################################################################################
-        monitor = StandbyClass(interval=5, radius=50, steps=64)
-        monitor.run()
 
     def call_to_notion(self, config):
         from swarmautomations.modules.call_recording_pipeline import CallRecordingPipelineClass
@@ -93,7 +95,7 @@ class MainClass():
         NU.write(page_id=notion_page, texto='* ' + transcription)
         return config
 
-    def source_to_notion_summary(self):
+    def source_to_notion_summary(self, config):
         from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
         ################################################################################################################
@@ -109,7 +111,7 @@ class MainClass():
         from eigenlib.LLM.sources_parser import SourcesParserClass
         from eigenlib.LLM.episode import EpisodeClass
         from eigenlib.LLM.oai_llm import OAILLMClientClass
-        from eigenlib.audio.OAI_TTS import OAITTSModelClass
+        from eigenlib.audio.oai_tts import OAITTSModelClass
         from eigenlib.image.dalle_model import DalleModelClass
         import os
         import pandas as pd

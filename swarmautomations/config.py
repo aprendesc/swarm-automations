@@ -9,7 +9,6 @@ test_config = {
             'continue_action': True,
 
             #CALL TO NOTION
-            'recordings_path': "./data/curated/automations_app_call_recording/",
 
             #SMARTWATCH AUDIO TO NOTION
             'audio_path': 'G:/Mi unidad/utils/Easy Voice Recorder',

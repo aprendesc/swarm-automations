@@ -1,5 +1,5 @@
 from eigenlib.LLM.episode import EpisodeClass
-from eigenlib.LLM.oai_llm import OAILLMClientClass
+from eigenlib.LLM.llm_client import LLMClientClass
 
 class SourceSummarizationClass:
             def __init__(self):
@@ -36,7 +36,7 @@ Responde simplemente con los puntos a tratar numerados. Tu respuesta debe conten
 
                     episode.log(channel='system', modality='text', content=A_prompt, agent_id='S')
                     episode.log(channel='system', modality='text', content=S_prompt, agent_id='S')
-                    S_message = OAILLMClientClass(model=model, temperature=temperature).run(episode, agent_id='S', use_steering=True, tool_choice='none')
+                    S_message = LLMClientClass(model=model, temperature=temperature).run(episode, agent_id='S', use_steering=True, tool_choice='none')
                     episode.log(channel='system', modality='text', content=A_prompt, agent_id='A')
                     episode.log(channel='system', modality='text', content='Puntos del resumen:\n' + S_message, agent_id='A')
                     episode.history = episode.history[episode.history['channel'] != 'steering']
@@ -44,7 +44,7 @@ Responde simplemente con los puntos a tratar numerados. Tu respuesta debe conten
                     print('--------------------------------------')
                     for i in range(n_subsections):
                         episode.log(channel='user', modality='text', content=f'Resume el bloque número {str(i+1)} de {str(n_subsections)}', agent_id='A')
-                        A_message = OAILLMClientClass(model=model, temperature=temperature).run(episode, agent_id='A', use_steering=True, tool_choice='none')
+                        A_message = LLMClientClass(model=model, temperature=temperature).run(episode, agent_id='A', use_steering=True, tool_choice='none')
                         episode.log(channel='assistant', modality='text', content=A_message, agent_id='A')
                         print('SUMMARY: ', A_message)
                     episode.history = episode.history[episode.history['channel'] != 'system']
