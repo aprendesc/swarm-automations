@@ -3,8 +3,6 @@ import unittest
 
 class TestMainClass(unittest.TestCase):
     def setUp(self):
-        from eigenlib.utils.project_setup import ProjectSetupClass
-        ProjectSetupClass(project_folder='swarm-automations', test_environ=True)
         ################################################################################################################
         self.main = MainClass({})
 
