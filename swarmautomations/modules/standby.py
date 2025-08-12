@@ -18,4 +18,3 @@ class StandbyClass:
             if (x0, y0) == pg.position():
                 print('Standby detected...')
                 self._circle(x0, y0)
-

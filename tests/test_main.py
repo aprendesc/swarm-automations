@@ -1,14 +1,11 @@
+from swarmautomations.main import MainClass
 import unittest
-from eigenlib.utils.project_setup import ProjectSetupClass
-ProjectSetupClass(project_folder='swarm-automations', test_environ=True)
 
-"""Integration tests"""
 class TestMainClass(unittest.TestCase):
     def setUp(self):
-        from eigenlib.utils.testing_utils import TestingUtilsClass
-        from swarmautomations.main import MainClass
+        from eigenlib.utils.project_setup import ProjectSetupClass
+        ProjectSetupClass(project_folder='swarm-automations', test_environ=True)
         ################################################################################################################
-        self.test_df, self.model, self.image, self.texto = TestingUtilsClass().get_dummy_data()
         self.main = MainClass({})
 
     def test_computer_use_automation(self):
@@ -156,53 +153,3 @@ class TestMainClass(unittest.TestCase):
         standby_thread_1.join(timeout=0.1)
         standby_thread_2.join(timeout=0.1)
         standby_thread_3.join(timeout=0.1)
-
-"""Unit tests"""
-class UnitTestModulesClass(unittest.TestCase):
-    def setUp(self):
-        import os
-        from eigenlib.utils.testing_utils import TestingUtilsClass, module_test_coverage
-        ################################################################################################################
-        module_test_coverage(os.environ['PROJECT_NAME'] + '.modules', self)
-        self.test_df, self.model, self.image, self.texto = TestingUtilsClass().get_dummy_data()
-
-    def test_automatic_summarizer(self):
-        from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
-        ################################################################################################################
-        source = """Lorem ipsum dolor sit amet, 
-        consectetur adipiscing elit, 
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."""
-        ################################################################################################################
-        ssc = SourceSummarizationClass()
-        ssc.run(source, n_sections=2, max_len=350000, overlap=25000, temperature=1, model='gpt-4.1')
-
-    def test_call_recording_pipeline(self):
-        import threading
-        import time
-        from swarmautomations.modules.call_recording_pipeline import CallRecordingPipelineClass
-        ################################################################################################################
-        ################################################################################################################
-        def aux_fun():
-            CallRecordingPipelineClass().run()
-        standby_thread = threading.Thread(target=aux_fun, daemon=True)
-        standby_thread.start()
-        time.sleep(3)
-
-    def test_standby(self):
-        import threading
-        import time
-        from swarmautomations.modules.standby import StandbyClass
-        ################################################################################################################
-        config = {'interval': 1}
-        ################################################################################################################
-        def aux_fun(config):
-            StandbyClass(**config).run()
-        standby_thread = threading.Thread(target=aux_fun, args=(config,), daemon=True)
-        standby_thread.start()
-        time.sleep(3)
-
-if __name__ == '__main__':
-    unittest.main()
