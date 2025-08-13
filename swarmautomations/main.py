@@ -11,17 +11,6 @@ class MainClass():
         monitor = StandbyClass(interval=time_interval, radius=50, steps=64)
         monitor.run()
 
-    def computer_use_automation(self, config):
-        from eigenlib.LLM.computer_use_tools import ComputerUseClass
-        ################################################################################################################
-        continue_action = config['continue_action']
-        instructions = config['instructions']
-        model = config['model']
-        ################################################################################################################
-        CUA = ComputerUseClass()
-        CUA.run(continue_action, instructions, model)
-        return config
-
     def call_to_notion(self, config):
         from swarmautomations.modules.call_recording_pipeline import CallRecordingPipelineClass
         ################################################################################################################
@@ -69,6 +58,17 @@ class MainClass():
                 print(f"❌ Error durante el procesamiento: {e}")
                 time.sleep(5)
 
+    def computer_use_automation(self, config):
+        from eigenlib.LLM.computer_use_tools import ComputerUseClass
+        ################################################################################################################
+        continue_action = config['continue_action']
+        instructions = config['instructions']
+        model = config['model']
+        ################################################################################################################
+        CUA = ComputerUseClass()
+        CUA.run(continue_action, instructions, model)
+        return config
+
     def youtube_to_notion(self, config):
         import tempfile
         from eigenlib.utils.youtube_utils import YoutubeUtilsClass
@@ -112,4 +112,12 @@ class MainClass():
         podcast_path = config['podcast_folder_path']
         ################################################################################################################
         PodcastGeneration().run(max_iter, podcast_path)
+        return config
+
+    def code_interpreter(self, config):
+
+        return config
+
+    def intelligent_web_search_engine(self, config):
+
         return config
