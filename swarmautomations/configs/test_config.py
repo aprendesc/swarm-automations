@@ -3,8 +3,11 @@
 hypothesis = """Automations app"""
 test_config = {
             'hypothesis': hypothesis,
+            # STANDNBY
+            'time_interval': 1,
+
             #COMPUTER USE
-            'instructions': """Open google chrome. Look for the weather in Alpedrete (Madrid) using the web browser and give me the weather for the next sunday. Say OBJECTIVE ACCOMPLISHED when you finish.""",
+            'instructions': """This is a test, make a random movement of the mouse, and then say OBJECTIVE ACCOMPLISGED to finish.""",
             'model': "computer-use-preview",
             'continue_action': True,
 
@@ -28,19 +31,6 @@ test_config = {
             # GENERATE_PODCAST
             'max_iter': 15,
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
-
-            # NANO NET
-            'master_address': 'tcp://localhost:5005',
-            'password': 'test_pass',
-
-            #LAUNCH NANO NET  NODE
-            'node_name': 'test_node',
-            'node_method': lambda a, b: a + b,
-            'delay': 1,
-
-            # CALL PERSONAL NODE
-            'address_node': 'test_node',
-            'payload': {'a': 1, 'b':2}
-                }
+        }
 
 ########################################################################################################################

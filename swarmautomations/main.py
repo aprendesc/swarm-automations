@@ -80,7 +80,6 @@ class MainClass():
         notion_page = config['yttn_notion_page']
         summarize = config['yttn_summarize']
         n_sections = config['yttn_n_sections']
-        video_url = 'https://www.youtube.com/watch?v=LyO22mTPE-E'
         ################################################################################################################
         youtube_utils = YoutubeUtilsClass(quiet=False)
         whisper_model = OAIWhisperSTTClass()
@@ -114,14 +113,3 @@ class MainClass():
         ################################################################################################################
         PodcastGeneration().run(max_iter, podcast_path)
         return config
-
-if __name__ == '__main__':
-    from swarmautomations.configs.config import test_config as config
-    main = MainClass(config)
-    main.standby(config)
-    #main.computer_use_automation(config)
-    #main.call_to_notion(config)
-    #main.listen_smartwatch_notes(config)
-    #main.youtube_to_notion(config)
-    #main.source_to_notion_summary(config)
-    #main.podcast_generation(config)
