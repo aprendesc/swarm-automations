@@ -9,7 +9,7 @@ class TestPodcastGeneration(unittest.TestCase):
         import threading
         import time
         from swarmautomations.modules.podcast_generation import PodcastGeneration
-        from swarmautomations.configs.test_config import test_config as config
+        from swarmautomations.configs.test_config import config
         ################################################################################################################
         def aux_fun(config):
             PodcastGeneration().run(**config)

@@ -1,5 +1,5 @@
 from swarmautomations.main import MainClass
-from swarmautomations.configs.test_config import test_config as config
+from swarmautomations.configs.test_config import config
 import unittest
 
 class TestMainClass(unittest.TestCase):

@@ -1,7 +1,7 @@
 
 ########################################################################################################################
 hypothesis = """Automations app"""
-test_config = {
+config = {
             'hypothesis': hypothesis,
             # STANDNBY
             'time_interval': 1,

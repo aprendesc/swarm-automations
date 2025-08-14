@@ -32,7 +32,7 @@ if True:
 """Launch main"""
 if False:
     from swarmautomations.main import MainClass
-    from swarmautomations.configs.test_config import test_config as config
+    from swarmautomations.configs.test_config import config
     main = MainClass(config)
     main.standby(config)
     main.computer_use_automation(config)
