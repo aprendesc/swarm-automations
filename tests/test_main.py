@@ -1,3 +1,5 @@
+import os
+
 from swarmautomations.main import MainClass
 from swarmautomations.configs.test_config import config
 import unittest
@@ -102,4 +104,11 @@ class TestMainClass(unittest.TestCase):
             os.remove(tmp_path)
 
     def test_get_project_map(self):
-        self.main.get_project_map(config)
+        base_path = f'C:\\Users\\{os.environ["USERNAME"]}\\Desktop\\proyectos'
+        target_project_folder = 'swarm-intelligence'
+        ########################################################################################################################
+        config['base_path'] = os.path.join(base_path, target_project_folder)
+        config['root_dir'] = './'
+        new_config = self.main.get_files_map(config)
+        print(new_config['result']['files_map'])
+

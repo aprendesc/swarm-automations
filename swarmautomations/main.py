@@ -179,21 +179,27 @@ class MainClass():
             config['result'] = {'tool_answer': 'Content successfully written to file.'}
             return config
 
-    def get_project_map(self, config):
+    def get_files_map(self, config):
         import os
+        import copy
         ################################################################################################################
-        root_path = config['root_path']
+        base_path = config['base_path']
+        root_dir = config['root_dir']
         ################################################################################################################
-        def project_map(project_root, excluded=['__', '.venv', 'git', '.env', '.pytest', '.idea', 'configs', '\\development'], included=['.py', '.sh']):
+        def project_map(root_dir, excluded=['__', '.venv', 'git', '.env', '.pytest', '.idea'], included=['.py', '.sh']):
             map = []
-            for root, dirs, files in os.walk(project_root):
+            for root, dirs, files in os.walk(root_dir):
                 for name in files:
                     file_path = os.path.join(root, name)
                     if any(sub in file_path for sub in excluded):
                         continue
-                    if any(inc in file_path for inc in included):
+                    #if any(inc in file_path for inc in included):
+                    else:
                         map.append(file_path)
             return map
-        map = project_map(root_path)
-        config['result'] = {'project_map': map}
+        old_wd = copy.deepcopy(os.getcwd())
+        os.chdir(base_path)#Changes the cwd for a moment to shorten the paths.
+        map = project_map(root_dir)
+        os.chdir(old_wd)
+        config['result'] = {'files_map': map}
         return config

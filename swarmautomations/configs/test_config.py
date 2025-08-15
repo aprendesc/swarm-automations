@@ -45,7 +45,8 @@ config = {
             'summarize_search': True,
 
             #GET PROJECT MAP
-            'root_path': '.',
+            'base_path': './',
+            'root_dir': 'swarmautomations',
         }
 
 ########################################################################################################################
