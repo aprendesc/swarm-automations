@@ -161,23 +161,28 @@ class MainClass():
 
     def local_file_operations_tools(self, config):
         import os
+        import copy
         ################################################################################################################
         file_path = config['file_path']
+        base_path = config['local_base_path']
         mode = config['mode']
         file_content = config['content']
         ################################################################################################################
-        if os.environ['PROJECT_NAME'] not in file_path:
-            config['result'] = {'tool_answer': 'Tool error: The file path must include the total path of the file from the project root: "./'+ os.environ['PROJECT_NAME']+ '"'}
+        #if os.environ['PROJECT_NAME'] not in file_path:
+        #    config['result'] = {'tool_answer': 'Tool error: The file path must include the total path of the file from the project root: "./'+ os.environ['PROJECT_NAME']+ '"'}
+        old_wd = copy.deepcopy(os.getcwd())
+        os.chdir(base_path)
         if mode == 'read_file':
             with open(file_path, 'r', encoding='utf-8') as f:
                 contenido = f.read()
             config['result'] = {'file_content': contenido}
-            return config
+            os.chdir(old_wd)
         elif mode == 'write_file':
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(file_content)
             config['result'] = {'tool_answer': 'Content successfully written to file.'}
-            return config
+        os.chdir(old_wd)
+        return config
 
     def get_files_map(self, config):
         import os

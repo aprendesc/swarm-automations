@@ -44,6 +44,12 @@ config = {
             'num_results': 2,
             'summarize_search': True,
 
+            #LOCAL FILE OPERATIONS
+            'mode':'read_file',
+            'local_base_path': './',
+            'file_path': 'swarmautomations/main.py',
+            'content':'no_content',
+
             #GET PROJECT MAP
             'base_path': './',
             'root_dir': 'swarmautomations',
