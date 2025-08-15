@@ -94,16 +94,35 @@ class MainClass():
         NU.write(page_id=notion_page, texto='* ' + transcription)
         return config
 
-    def source_to_notion_summary(self, config):
+    def sources_parser_and_summarizer(self, config):
         from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
+        from eigenlib.LLM.sources_parser import SourcesParserClass
         ################################################################################################################
-        source = config['source']
+        source_path_or_url = config['source_path_or_url']
         notion_page = config['summarizer_notion_page']
+        parse = config['parse']
+        summarize = config['summarize']
+        n_sections = config['n_sections']
+        to_notion = config['to_notion']
         ################################################################################################################
-        summary = SourceSummarizationClass().run(source, n_sections=2)
-        NU = NotionUtilsClass()
-        NU.write(page_id=notion_page, texto='* ' + summary)
+        result_dict = {
+            'content': 'no source',
+            'succesfully_sent_to_notion': False
+                       }
+        if parse:
+            content = SourcesParserClass().run(source_path_or_url)
+            source_path_or_url = content
+            result_dict['content'] = content
+        if summarize:
+            content = SourceSummarizationClass().run(source_path_or_url, n_sections=n_sections)
+            result_dict['content'] = content
+        if to_notion:
+            NU = NotionUtilsClass()
+            NU.write(page_id=notion_page, texto='> ' + content)
+            result_dict['succesfully_sent_to_notion'] = True
+        config['result'] = result_dict
+        return config
 
     def podcast_generation(self, config):
         from swarmautomations.modules.podcast_generation import PodcastGeneration
@@ -114,12 +133,28 @@ class MainClass():
         PodcastGeneration().run(max_iter, podcast_path)
         return config
 
-    #TODO
     def code_interpreter(self, config):
-
+        from swarmautomations.modules.code_interpreter import CodeInterpreter
+        ################################################################################################################
+        interpreter_path = r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence\.venv\Scripts\python.exe"
+        path_folders = [
+            r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence",
+            r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"]
+        programming_language = config['programming_language']
+        code = config['code']
+        ################################################################################################################
+        cit = CodeInterpreter(interpreter_path, path_folders)
+        result = cit.run(programming_language=programming_language, code=code)
+        config['result'] = result
         return config
 
-    #TODO
-    def intelligent_web_search_engine(self, config):
-
+    def intelligent_web_search(self, config):
+        from swarmautomations.modules.intelligent_web_search import IntelligentWebSearch
+        ################################################################################################################
+        query = config['query']
+        num_results = config['num_results']
+        summarize = config['summarize']
+        ################################################################################################################
+        result = IntelligentWebSearch().run(query, num_results, summarize)
+        config['result'] = result
         return config

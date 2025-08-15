@@ -20,6 +20,7 @@ class SourceSummarizationClass:
                 episode = EpisodeClass()
                 n_subsections = int(n_sections/len(source_chunks))
                 counter = 0
+                summary = ''
                 for c in source_chunks:
                     A_prompt = f"""
 # Instrucciones:
@@ -47,12 +48,8 @@ Responde simplemente con los puntos a tratar numerados. Tu respuesta debe conten
                         A_message = LLMClientClass(model=model, temperature=temperature).run(episode, agent_id='A', use_steering=True, tool_choice='none')
                         episode.log(channel='assistant', modality='text', content=A_message, agent_id='A')
                         print('SUMMARY: ', A_message)
+                        summary += A_message
                     episode.history = episode.history[episode.history['channel'] != 'system']
                     counter += 1
-
-                history = episode.history
-                history = history[history['agent_id'] == 'A']
-                summary = history[history['channel'] == 'assistant']['content'].iloc[1:].sum()
                 summary = summary.replace('```markdown', '').replace('```', '')
-
                 return summary

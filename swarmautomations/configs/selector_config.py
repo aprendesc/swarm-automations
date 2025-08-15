@@ -1,12 +1,10 @@
-########################################################################################################################
-hypothesis = """Automations app"""
 
 apps = {'1': 'standby',
         '2': 'call_to_notion',
         '3': 'listen_smartwatch_notes',
         '4': 'computer_use_automation',
         '5': 'youtube_to_notion',
-        '6': 'source_to_notion_summary',
+        '6': 'sources_parser_and_summarizer',
         '7': 'podcast_generation',
         }
 print("""
@@ -15,7 +13,7 @@ print("""
         '3': 'listen_smartwatch_notes',
         '4': 'computer_use_automation',
         '5': 'youtube_to_notion',
-        '6': 'source_to_notion_summary',
+        '6': 'sources_parser_and_summarizer',
         '7': 'podcast_generation',
         }
 """)
@@ -38,7 +36,7 @@ elif sel_app == 'listen_smartwatch_notes':
 
 elif sel_app == 'youtube_to_notion':
     url = input('URL: ')
-    summarize = input('Summarize? (y/n): ')
+    summarize = input('Summarize? (y/n): ')=='y'
     if summarize:
         n_sections = input('Select n sections: ')
     else:
@@ -50,14 +48,19 @@ elif sel_app == 'youtube_to_notion':
         'yttn_n_sections': n_sections,
         }
 
-elif sel_app == 'source_to_notion_summary':
-    summarize = input('Summarize? (y/n): ')
+elif sel_app == 'sources_parser_and_summarizer':
+    source = input('Introduce source:')
+    summarize = input('Summarize? (y/n): ')=='y'
     if summarize:
         n_sections = input('Select n sections: ')
     else:
         n_sections = None
+    to_notion = input('Send to notion?(y/n)')=='y'
     config = {
-        'source': 'Hola Mundo',
+        'parse': True,
+        'to_notion': to_notion,
+        'summarize': summarize,
+        'source': source,
         'n_sections': n_sections,
         'summarizer_notion_page': '2432a599e985804692b7d6982895a2b2',
     }

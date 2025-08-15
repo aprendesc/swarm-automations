@@ -23,9 +23,12 @@ config = {
             'yttn_summarize': True,
             'yttn_n_sections': 5,
 
-            # SOURCE TO NOTION SUMMARY
-            'source': 'Hola Mundo',
+            # sources_parser_and_summarizer
+            'source': 'https://arxiv.org/pdf/2506.21734',
             'n_sections': 2,
+            'parse': True,
+            'summarize': True,
+            'to_notion': True,
             'summarizer_notion_page': '2432a599e985804692b7d6982895a2b2',
 
             # GENERATE_PODCAST

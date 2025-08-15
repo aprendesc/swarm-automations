@@ -42,11 +42,11 @@ class TestMainClass(unittest.TestCase):
         standby_thread.start()
         time.sleep(self.test_delay)
 
-    def test_source_to_notion_summary(self):
+    def test_sources_parser_and_summarizer(self):
         import threading
         import time
         ################################################################################################################
-        standby_thread = threading.Thread(target=self.main.source_to_notion_summary, args=(config,), daemon=True)
+        standby_thread = threading.Thread(target=self.main.sources_parser_and_summarizer, args=(config,), daemon=True)
         standby_thread.start()
         time.sleep(self.test_delay)
 
