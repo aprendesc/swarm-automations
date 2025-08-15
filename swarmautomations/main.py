@@ -178,3 +178,22 @@ class MainClass():
                 f.write(file_content)
             config['result'] = {'tool_answer': 'Content successfully written to file.'}
             return config
+
+    def get_project_map(self, config):
+        import os
+        ################################################################################################################
+        root_path = config['root_path']
+        ################################################################################################################
+        def project_map(project_root, excluded=['__', '.venv', 'git', '.env', '.pytest', '.idea', 'configs', '\\development'], included=['.py', '.sh']):
+            map = []
+            for root, dirs, files in os.walk(project_root):
+                for name in files:
+                    file_path = os.path.join(root, name)
+                    if any(sub in file_path for sub in excluded):
+                        continue
+                    if any(inc in file_path for inc in included):
+                        map.append(file_path)
+            return map
+        map = project_map(root_path)
+        config['result'] = {'project_map': map}
+        return config

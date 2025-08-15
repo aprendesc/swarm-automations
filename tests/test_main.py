@@ -100,3 +100,6 @@ class TestMainClass(unittest.TestCase):
             print("✅ Test pasado")
         finally:
             os.remove(tmp_path)
+
+    def test_get_project_map(self):
+        self.main.get_project_map(config)
