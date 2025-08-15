@@ -46,9 +46,13 @@ class TestMainClass(unittest.TestCase):
         import threading
         import time
         ################################################################################################################
-        standby_thread = threading.Thread(target=self.main.sources_parser_and_summarizer, args=(config,), daemon=True)
-        standby_thread.start()
-        time.sleep(self.test_delay)
+        #standby_thread = threading.Thread(target=self.main.sources_parser_and_summarizer, args=(config,), daemon=True)
+        #standby_thread.start()
+        #time.sleep(self.test_delay)
+
+        #NO TRADING
+        new_config = self.main.intelligent_web_search(config)
+        print(new_config['result'])
 
     @unittest.skip("Class not functional")
     def test_podcast_generation(self):
@@ -63,3 +67,36 @@ class TestMainClass(unittest.TestCase):
         standby_thread = threading.Thread(target=self.main.podcast_generation, args=(config,), daemon=True)
         standby_thread.start()
         time.sleep(3)
+
+    def test_code_interpreter(self):
+        self.main.code_interpreter(config)
+
+    def test_intelligent_web_search(self):
+        new_config = self.main.intelligent_web_search(config)
+        print(new_config['result'])
+
+    def test_local_file_operations(self):
+        import tempfile
+        import os
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as tmp:
+            tmp_path = tmp.name
+        try:
+            # Escribir al archivo
+            config_write = {
+                'file_path': tmp_path,
+                'mode': 'write_file',
+                'content': "print('Hola desde test')"
+            }
+            self.main.file_operations_tools(config_write)
+            # Leer del archivo
+            config_read = {
+                'file_path': tmp_path,
+                'mode': 'read_file',
+                'content': None
+            }
+            result = self.main.file_operations_tools(config_read)
+            assert "Hola desde test" in result['result']['file_content']
+            print("✅ Test pasado")
+        finally:
+            os.remove(tmp_path)

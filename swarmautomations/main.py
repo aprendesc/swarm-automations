@@ -153,8 +153,28 @@ class MainClass():
         ################################################################################################################
         query = config['query']
         num_results = config['num_results']
-        summarize = config['summarize']
+        summarize = config['summarize_search']
         ################################################################################################################
         result = IntelligentWebSearch().run(query, num_results, summarize)
         config['result'] = result
         return config
+
+    def local_file_operations_tools(self, config):
+        import os
+        ################################################################################################################
+        file_path = config['file_path']
+        mode = config['mode']
+        file_content = config['content']
+        ################################################################################################################
+        if os.environ['PROJECT_NAME'] not in file_path:
+            config['result'] = {'tool_answer': 'Tool error: The file path must include the total path of the file from the project root: "./'+ os.environ['PROJECT_NAME']+ '"'}
+        if mode == 'read_file':
+            with open(file_path, 'r', encoding='utf-8') as f:
+                contenido = f.read()
+            config['result'] = {'file_content': contenido}
+            return config
+        elif mode == 'write_file':
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(file_content)
+            config['result'] = {'tool_answer': 'Content successfully written to file.'}
+            return config

@@ -34,6 +34,15 @@ config = {
             # GENERATE_PODCAST
             'max_iter': 15,
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
+
+            #CODE INTERPRETER
+            'programming_language': 'python',
+            'code': 'print("Hello World")',
+
+            #INTELLIGENT WEB SEARCH
+            'query': 'F22 Raptor',
+            'num_results': 2,
+            'summarize_search': True,
         }
 
 ########################################################################################################################
