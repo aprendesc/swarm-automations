@@ -24,7 +24,7 @@ config = {
             'yttn_n_sections': 5,
 
             # sources_parser_and_summarizer
-            'source': 'https://arxiv.org/pdf/2506.21734',
+            'source_path_or_url': 'https://arxiv.org/pdf/2506.21734',
             'n_sections': 2,
             'parse': True,
             'summarize': True,

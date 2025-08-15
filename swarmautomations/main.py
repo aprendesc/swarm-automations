@@ -21,39 +21,30 @@ class MainClass():
     def listen_smartwatch_notes(self, config):
         from eigenlib.audio.oai_whisper_stt import OAIWhisperSTTClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
-        import os
-        import time
-
+        import os, time
         ################################################################################################################
         audio_path = config['audio_path']
         notion_page = config['sw_notion_page']
         ################################################################################################################
-
         whisper_model = OAIWhisperSTTClass()
         NU = NotionUtilsClass()
-
         print(f"📡 Monitoreando carpeta: {audio_path}")
         processed_files = set()
-
         while True:
             try:
                 current_files = set(os.listdir(audio_path))
                 new_files = current_files - processed_files
-
                 for f in new_files:
                     file_path = os.path.join(audio_path, f)
-
                     if os.path.isfile(file_path):
                         print(f"🎙️  Nuevo archivo detectado: {f}")
                         transcription = whisper_model.run(file_path, engine='cloud')
                         NU.write(page_id=notion_page, texto='* ' + transcription)
                         os.remove(file_path)
                         print(f"✅ Procesado y eliminado: {f}")
-                        time.sleep(2)  # Pequeña pausa tras el procesamiento
-
+                        time.sleep(2)
                 processed_files = current_files
-                time.sleep(5)  # Esperar antes de la próxima comprobación
-
+                time.sleep(5)
             except Exception as e:
                 print(f"❌ Error durante el procesamiento: {e}")
                 time.sleep(5)
@@ -65,8 +56,7 @@ class MainClass():
         instructions = config['instructions']
         model = config['model']
         ################################################################################################################
-        CUA = ComputerUseClass()
-        CUA.run(continue_action, instructions, model)
+        ComputerUseClass().run(continue_action, instructions, model)
         return config
 
     def youtube_to_notion(self, config):
@@ -81,17 +71,14 @@ class MainClass():
         summarize = config['yttn_summarize']
         n_sections = config['yttn_n_sections']
         ################################################################################################################
-        youtube_utils = YoutubeUtilsClass(quiet=False)
+        yt = YoutubeUtilsClass(quiet=False)
         whisper_model = OAIWhisperSTTClass()
         with tempfile.TemporaryDirectory() as tmpdir:
-            result_path = youtube_utils.download_audio(video_url=video_url, output_dir=tmpdir, filename='temp_audio', compress=True, compression_level='medium')
+            result_path = yt.download_audio(video_url=video_url, output_dir=tmpdir, filename='temp_audio', compress=True, compression_level='medium')
             transcription = whisper_model.run(result_path, engine='cloud')
-        print('Transcription completed')
         if summarize:
             transcription = SourceSummarizationClass().run(transcription, n_sections=int(n_sections))
-            print('Summarization completed')
-        NU = NotionUtilsClass()
-        NU.write(page_id=notion_page, texto='* ' + transcription)
+        NotionUtilsClass().write(page_id=notion_page, texto='* ' + transcription)
         return config
 
     def sources_parser_and_summarizer(self, config):
@@ -106,10 +93,8 @@ class MainClass():
         n_sections = config['n_sections']
         to_notion = config['to_notion']
         ################################################################################################################
-        result_dict = {
-            'content': 'no source',
-            'succesfully_sent_to_notion': False
-                       }
+        result_dict = {'content': 'no source', 'succesfully_sent_to_notion': False}
+        content = ''
         if parse:
             content = SourcesParserClass().run(source_path_or_url)
             source_path_or_url = content
@@ -118,8 +103,7 @@ class MainClass():
             content = SourceSummarizationClass().run(source_path_or_url, n_sections=n_sections)
             result_dict['content'] = content
         if to_notion:
-            NU = NotionUtilsClass()
-            NU.write(page_id=notion_page, texto='> ' + content)
+            NotionUtilsClass().write(page_id=notion_page, texto='> ' + content)
             result_dict['succesfully_sent_to_notion'] = True
         config['result'] = result_dict
         return config
@@ -137,15 +121,12 @@ class MainClass():
         from swarmautomations.modules.code_interpreter import CodeInterpreter
         ################################################################################################################
         interpreter_path = r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence\.venv\Scripts\python.exe"
-        path_folders = [
-            r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence",
-            r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"]
+        path_folders = [r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence", r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"]
         programming_language = config['programming_language']
         code = config['code']
         ################################################################################################################
         cit = CodeInterpreter(interpreter_path, path_folders)
-        result = cit.run(programming_language=programming_language, code=code)
-        config['result'] = result
+        config['result'] = cit.run(programming_language=programming_language, code=code)
         return config
 
     def intelligent_web_search(self, config):
@@ -155,28 +136,49 @@ class MainClass():
         num_results = config['num_results']
         summarize = config['summarize_search']
         ################################################################################################################
-        result = IntelligentWebSearch().run(query, num_results, summarize)
-        config['result'] = result
+        config['result'] = IntelligentWebSearch().run(query, num_results, summarize)
+        return config
+
+    def google_search(self, config):
+        from googlesearch import search
+        ################################################################################################################
+        query = config['query']
+        num_results = config['num_results']
+        ################################################################################################################
+        config['result'] = {'urls': list(search(query, num_results=num_results))}
+        return config
+
+    def browse_url(self, config):
+        from swarmautomations.modules.intelligent_web_search import IntelligentWebSearch
+        from eigenlib.utils.parallel_utils import ParallelUtilsClass
+        ################################################################################################################
+        urls = config['urls']
+        query = config['query']
+        summarize = config['summarize_search']
+        ################################################################################################################
+        if isinstance(urls, str):
+            urls = [urls]
+        IWS = IntelligentWebSearch()
+        IWS.summarize = summarize
+        IWS.model = 'gpt-5-nano'
+        result = ParallelUtilsClass().run_in_parallel(IWS._url_to_summary, {'query': query}, {'url': urls}, n_threads=len(urls), use_processes=False)
+        config['result'] = {'summary': '\n'.join(result)}
         return config
 
     def local_file_operations_tools(self, config):
-        import os
-        import copy
+        import os, copy
         ################################################################################################################
         file_path = config['file_path']
         base_path = config['local_base_path']
         mode = config['mode']
         file_content = config['content']
         ################################################################################################################
-        #if os.environ['PROJECT_NAME'] not in file_path:
-        #    config['result'] = {'tool_answer': 'Tool error: The file path must include the total path of the file from the project root: "./'+ os.environ['PROJECT_NAME']+ '"'}
         old_wd = copy.deepcopy(os.getcwd())
         os.chdir(base_path)
         if mode == 'read_file':
             with open(file_path, 'r', encoding='utf-8') as f:
                 contenido = f.read()
             config['result'] = {'file_content': contenido}
-            os.chdir(old_wd)
         elif mode == 'write_file':
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(file_content)
@@ -185,25 +187,22 @@ class MainClass():
         return config
 
     def get_files_map(self, config):
-        import os
-        import copy
+        import os, copy
         ################################################################################################################
         base_path = config['base_path']
         root_dir = config['root_dir']
         ################################################################################################################
-        def project_map(root_dir, excluded=['__', '.venv', 'git', '.env', '.pytest', '.idea'], included=['.py', '.sh']):
+        def project_map(root_dir, excluded=['__', '.venv', 'git', '.env', '.pytest', '.idea']):
             map = []
-            for root, dirs, files in os.walk(root_dir):
+            for root, _, files in os.walk(root_dir):
                 for name in files:
                     file_path = os.path.join(root, name)
                     if any(sub in file_path for sub in excluded):
                         continue
-                    #if any(inc in file_path for inc in included):
-                    else:
-                        map.append(file_path)
+                    map.append(file_path)
             return map
         old_wd = copy.deepcopy(os.getcwd())
-        os.chdir(base_path)#Changes the cwd for a moment to shorten the paths.
+        os.chdir(base_path)
         map = project_map(root_dir)
         os.chdir(old_wd)
         config['result'] = {'files_map': map}
