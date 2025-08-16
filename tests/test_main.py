@@ -162,6 +162,7 @@ class TestMainClass(unittest.TestCase):
             'vdb_name': 'test_VDB',
             'vdb_chunking_threshold': 150,
             'vdb_query': 'Capital de Francia',
+            'lang': 'eng',
         }
         fit_cfg = self.main.vector_database(fit_cfg)
         self.assertEqual(fit_cfg['result']['status'], 'fit_ok')
@@ -175,8 +176,10 @@ class TestMainClass(unittest.TestCase):
             'vdb_name': 'test_VDB',
             'vdb_chunking_threshold': 150,
             'vdb_query': 'Capital de Francia',
+            'lang': 'eng',
         }
         retrieval_cfg = self.main.vector_database(retrieval_cfg)
         self.assertIn('retrieved', retrieval_cfg['result'])
         self.assertTrue(len(retrieval_cfg['result']['retrieved']) > 0)
         print("Vector DB retrieval (truncated):", retrieval_cfg['result']['retrieved'][:100])
+
