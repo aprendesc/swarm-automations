@@ -152,3 +152,24 @@ class TestMainClass(unittest.TestCase):
         new_config = self.main.get_files_map(config)
         self.assertIn('files_map', new_config['result'])
         print("Files map sample:", new_config['result']['files_map'][:5])
+
+    def test_vector_database(self):
+        # FIT -------------------------------------------------------------------------
+        fit_cfg = {
+            'mode': 'fit',
+            'source': 'Uno. Dos. Tres. Este es un pequeño texto de prueba para indexar. Cuatro. Cinco.',
+        }
+        fit_cfg = self.main.vector_database(fit_cfg)
+        self.assertEqual(fit_cfg['result']['status'], 'fit_ok')
+        self.assertGreater(fit_cfg['result']['n_chunks'], 0)
+
+        # RETRIEVAL -------------------------------------------------------------------
+        retrieval_cfg = {
+            'mode': 'retrieval',
+            'query': 'prueba',
+            'top_n': 3,
+        }
+        retrieval_cfg = self.main.vector_database(retrieval_cfg)
+        self.assertIn('retrieved', retrieval_cfg['result'])
+        self.assertTrue(len(retrieval_cfg['result']['retrieved']) > 0)
+        print("Vector DB retrieval (truncated):", retrieval_cfg['result']['retrieved'][:100])

@@ -1,6 +1,7 @@
 class MainClass():
     def __init__(self, config):
-        pass
+        self._vdb = None  # Almacena una instancia viva entre llamadas
+        self._config = config
 
     """Automations"""
     def standby(self, config):
@@ -203,4 +204,30 @@ class MainClass():
         map = project_map(map_root_dir)
         os.chdir(old_wd)
         config['result'] = {'files_map': map}
+        return config
+
+    def vector_database(self, config):
+        from eigenlib.LLM.vector_database import VectorDatabaseClass
+        ################################################################################################################
+        mode = config['mode']                    # 'fit' | 'retrieval'
+        vdb_name = config.get('vdb_name', None)
+        reset_db = config.get('reset_db', False)
+        source = config.get('source', '')
+        query = config.get('query', '')
+        top_n = int(config.get('top_n', 5))
+        create_vectors = config.get('create_vectors', True)
+        ################################################################################################################
+        if self._vdb is None or reset_db:
+            self._vdb = VectorDatabaseClass(vdb_name=vdb_name)
+            self._vdb.initialize()
+
+        if mode == 'fit':
+            vdb_df = self._vdb.create(source, create_vectors=create_vectors)
+            self._vdb.source_df = vdb_df
+            config['result'] = {'status': 'fit_ok', 'n_chunks': len(vdb_df)}
+
+        elif mode == 'retrieval':
+            retrieved_text = self._vdb.get(query=query, top_n=top_n)
+            config['result'] = {'retrieved': retrieved_text}
+
         return config
