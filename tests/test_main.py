@@ -105,8 +105,6 @@ class TestMainClass(unittest.TestCase):
         # Build a new config for browsing phase
         browse_cfg = {
             'urls': urls,
-            'query': config['query'],
-            'summarize_search': False  # Keep it quick for the test suite
         }
         br_config = self.main.browse_url(browse_cfg)
         self.assertIn('result', br_config)

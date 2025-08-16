@@ -150,19 +150,15 @@ class MainClass():
         return config
 
     def browse_url(self, config):
-        from swarmautomations.modules.intelligent_web_search import IntelligentWebSearch
         from eigenlib.utils.parallel_utils import ParallelUtilsClass
+        from eigenlib.LLM.sources_parser import SourcesParserClass
         ################################################################################################################
         urls = config['urls']
-        query = config['query']
-        summarize = config['summarize_search']
         ################################################################################################################
         if isinstance(urls, str):
             urls = [urls]
-        IWS = IntelligentWebSearch()
-        IWS.summarize = summarize
-        IWS.model = 'gpt-5-nano'
-        result = ParallelUtilsClass().run_in_parallel(IWS._url_to_summary, {'query': query}, {'url': urls}, n_threads=len(urls), use_processes=False)
+        sp = SourcesParserClass()
+        result = ParallelUtilsClass().run_in_parallel(sp.run, {}, {'file_path': urls}, n_threads=len(urls), use_processes=False)
         config['result'] = {'summary': '\n'.join(result)}
         return config
 
