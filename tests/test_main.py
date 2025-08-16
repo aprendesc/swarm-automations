@@ -150,7 +150,7 @@ class TestMainClass(unittest.TestCase):
         finally:
             os.remove(tmp_path)
 
-    def test_get_project_map(self):
+    def test_get_files_map(self):
         base_path = f"C:/Users/{os.environ['USERNAME']}/Desktop/proyectos"
         target_project_folder = 'swarm-automations'
         config['base_path'] = os.path.join(base_path, target_project_folder)
