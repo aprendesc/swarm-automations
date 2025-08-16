@@ -172,7 +172,7 @@ class MainClass():
         file_path = config['file_path']
         base_path = config['local_base_path']
         mode = config['mode']
-        file_content = config['content']
+        file_content = config.get('content', None)
         ################################################################################################################
         old_wd = copy.deepcopy(os.getcwd())
         os.chdir(base_path)

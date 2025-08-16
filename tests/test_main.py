@@ -90,9 +90,6 @@ class TestMainClass(unittest.TestCase):
         self.assertIn('result', new_config)
         print(new_config['result'])
 
-    # ----------------------------------------------------------------------------------
-    # NEW TESTS FOR GOOGLE_SEARCH & BROWSE_URL
-    # ----------------------------------------------------------------------------------
     def test_google_search(self):
         gs_config = self.main.google_search(config.copy())
         self.assertIn('result', gs_config)
@@ -116,8 +113,6 @@ class TestMainClass(unittest.TestCase):
         self.assertIn('summary', br_config['result'])
         self.assertTrue(len(br_config['result']['summary']) > 0)
         print("Browse URL summary (truncated):", br_config['result']['summary'][:200])
-
-    # ----------------------------------------------------------------------------------
 
     def test_local_file_operations(self):
         #Single test
