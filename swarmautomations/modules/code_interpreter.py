@@ -5,9 +5,14 @@ import subprocess
 import os
 
 class CodeInterpreter:
-    def __init__(self, interpreter_path, path_folders):
-        self.interpreter_path = interpreter_path
+    def __init__(self, interpreter_launcher, path_folders, cwd='./'):
+        self.interpreter_launcher = interpreter_launcher
         self.path_folders = path_folders
+        self.cwd = cwd
+        self.cwd_header = f"""
+import os
+os.chdir("{cwd}")
+"""
 
     def initialize(self):
         pass
@@ -21,7 +26,14 @@ class CodeInterpreter:
                     env = os.environ.copy()
                     env["PYTHONPATH"] = os.pathsep.join(self.path_folders)
                     env["PYTHONUNBUFFERED"] = "1"
-                    response = subprocess.run([self.interpreter_path, "-c", code], text=True, capture_output=True, env=env)
+                    #import tempfile
+                    #def run_code(code: str, env=None):
+                    #    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+                    #        f.write(code)
+                    #        f.flush()
+                    #        return subprocess.run([self.interpreter_launcher, f.name], text=True, capture_output=True, env=env)
+                    #response = run_code(self.cwd_header + code)
+                    response = subprocess.run([self.interpreter_launcher, "-c", self.cwd_header + code], text=True, capture_output=True, env=env)
                 result = response.stdout
                 error = response.stderr or None
             except Exception:

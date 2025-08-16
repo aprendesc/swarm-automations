@@ -32,6 +32,8 @@ class MainClassToolAdapter:
             }
             if arg.get("required"):
                 required.append(arg["name"])
+            if "items" in arg.keys():
+                args_schema[arg["name"]]['items'] = arg['items']
         return {
             "type": "function",
             "function": {

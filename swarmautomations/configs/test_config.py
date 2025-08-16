@@ -1,58 +1,64 @@
-
-########################################################################################################################
 hypothesis = """Automations app"""
+
 config = {
             'hypothesis': hypothesis,
-            # STANDNBY
+
+            # STANDBY
             'time_interval': 1,
 
-            #COMPUTER USE
-            'instructions': """This is a test, make a random movement of the mouse, and then say OBJECTIVE ACCOMPLISGED to finish.""",
-            'model': "computer-use-preview",
-            'continue_action': True,
+            # CALL TO NOTION (pipe de llamadas grabadas)
+            # No requiere parámetros adicionales
 
-            #CALL TO NOTION
-
-            #SMARTWATCH AUDIO TO NOTION
+            # SMARTWATCH NOTES → NOTION
             'audio_path': 'G:/Mi unidad/utils/Easy Voice Recorder',
             'sw_notion_page': '23d2a599e98580d6b20dc30f999a1a2c',
 
-            # YOUTUBE TO NOTION
+            # COMPUTER USE AUTOMATION
+            'instructions': """This is a test, make a random movement of the mouse, and then say OBJECTIVE ACCOMPLISHED to finish.""",
+            'model': 'computer-use-preview',
+            'continue_action': True,
+
+            # YOUTUBE → NOTION
             'yttn_video_url': 'https://www.youtube.com/watch?v=1uX0qHQfSMg',
             'yttn_notion_page': '2432a599e985804692b7d6982895a2b2',
             'yttn_summarize': True,
             'yttn_n_sections': 5,
 
-            # sources_parser_and_summarizer
+            # SOURCES PARSER & SUMMARIZER
             'source_path_or_url': 'https://arxiv.org/pdf/2506.21734',
-            'n_sections': 2,
+            'summarizer_notion_page': '2432a599e985804692b7d6982895a2b2',
             'parse': True,
             'summarize': True,
+            'n_sections': 2,
             'to_notion': True,
-            'summarizer_notion_page': '2432a599e985804692b7d6982895a2b2',
 
-            # GENERATE_PODCAST
+            # PODCAST GENERATION
             'max_iter': 15,
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
 
-            #CODE INTERPRETER
+            # CODE INTERPRETER
             'programming_language': 'python',
-            'code': 'print("Hello World")',
+            'code': 'print(os.listdir())',
+            'interpreter_launcher': r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence\.venv\Scripts\python.exe",
+            'interpreter_cwd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos',#/swarm-intelligence',
+            'interpreter_path_dirs': [r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence",
+                                 r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"],
 
-            #INTELLIGENT WEB SEARCH
+            # INTELLIGENT / GOOGLE WEB SEARCH
             'query': 'F22 Raptor',
             'num_results': 2,
             'summarize_search': True,
+            # browse_url recibirá "urls" dinámicamente desde google_search durante los tests
 
-            #LOCAL FILE OPERATIONS
-            'mode':'read_file',
-            'local_base_path': './',
-            'file_path': 'swarmautomations/main.py',
-            'content':'no_content',
+            # LOCAL FILE OPERATIONS
+            'mode': 'read_file',
+            'local_base_path': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos',
+            'file_path': 'swarm-automations/swarmautomations/main.py',
+            'content': 'no_content',
 
-            #GET PROJECT MAP
-            'base_path': './',
-            'root_dir': 'swarmautomations',
+            # GET FILES MAP
+            'map_base_path': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos',
+            'map_root_dir': 'swarm-automations',
         }
 
 ########################################################################################################################

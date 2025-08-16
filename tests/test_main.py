@@ -73,7 +73,6 @@ class TestMainClass(unittest.TestCase):
     def test_podcast_generation(self):
         import threading
         import time
-
         local_cfg = {
             'max_iter': 15,
             'podcast_folder_path': './data/processed/podcast_pipeline_stage',
@@ -83,7 +82,8 @@ class TestMainClass(unittest.TestCase):
         time.sleep(3)
 
     def test_code_interpreter(self):
-        self.main.code_interpreter(config)
+        new_config = self.main.code_interpreter(config)
+        print(new_config['result'])
 
     def test_intelligent_web_search(self):
         new_config = self.main.intelligent_web_search(config)
@@ -120,8 +120,11 @@ class TestMainClass(unittest.TestCase):
     # ----------------------------------------------------------------------------------
 
     def test_local_file_operations(self):
-        import tempfile
+        #Single test
+        result = self.main.local_file_operations_tools(config)
+        print(result['result'])
 
+        import tempfile
         with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as tmp:
             tmp_path = tmp.name
         try:
@@ -148,9 +151,8 @@ class TestMainClass(unittest.TestCase):
             os.remove(tmp_path)
 
     def test_get_project_map(self):
-        base_path = f"C:/Users/{os.environ.get('USERNAME', '')}/Desktop/proyectos"
-        target_project_folder = 'swarm-intelligence'
-
+        base_path = f"C:/Users/{os.environ['USERNAME']}/Desktop/proyectos"
+        target_project_folder = 'swarm-automations'
         config['base_path'] = os.path.join(base_path, target_project_folder)
         config['root_dir'] = './'
         new_config = self.main.get_files_map(config)

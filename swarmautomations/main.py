@@ -120,12 +120,13 @@ class MainClass():
     def code_interpreter(self, config):
         from swarmautomations.modules.code_interpreter import CodeInterpreter
         ################################################################################################################
-        interpreter_path = r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence\.venv\Scripts\python.exe"
-        path_folders = [r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence", r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"]
+        interpreter_launcher = config['interpreter_launcher']
+        interpreter_cwd = config['interpreter_cwd']
+        interpreter_path_dirs = config['interpreter_path_dirs']
         programming_language = config['programming_language']
         code = config['code']
         ################################################################################################################
-        cit = CodeInterpreter(interpreter_path, path_folders)
+        cit = CodeInterpreter(interpreter_launcher, interpreter_path_dirs, cwd=interpreter_cwd)
         config['result'] = cit.run(programming_language=programming_language, code=code)
         return config
 
@@ -189,8 +190,8 @@ class MainClass():
     def get_files_map(self, config):
         import os, copy
         ################################################################################################################
-        base_path = config['base_path']
-        root_dir = config['root_dir']
+        map_base_path = config['map_base_path']
+        map_root_dir = config['map_root_dir']
         ################################################################################################################
         def project_map(root_dir, excluded=['__', '.venv', 'git', '.env', '.pytest', '.idea']):
             map = []
@@ -202,8 +203,8 @@ class MainClass():
                     map.append(file_path)
             return map
         old_wd = copy.deepcopy(os.getcwd())
-        os.chdir(base_path)
-        map = project_map(root_dir)
+        os.chdir(map_base_path)
+        map = project_map(map_root_dir)
         os.chdir(old_wd)
         config['result'] = {'files_map': map}
         return config
