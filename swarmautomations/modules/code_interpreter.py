@@ -8,7 +8,7 @@ class CodeInterpreter:
     def __init__(self, interpreter_launcher, path_folders, cwd='./'):
         self.interpreter_launcher = interpreter_launcher
         self.path_folders = path_folders
-        self.cwd = cwd
+        self.cwd = cwd.replace("\\", "/")
         self.cwd_header = f"""
 import os
 os.chdir("{cwd}")
