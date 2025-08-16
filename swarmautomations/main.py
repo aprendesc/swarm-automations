@@ -215,9 +215,10 @@ class MainClass():
         mode = config['vdb_mode']
         ############################################################################################################
         if mode == 'initialize':
+            VDB_name = config['vdb_name']
             ############################################################################################################
             self.VDB = VectorDatabaseClass(content_feature='steering')
-            self.VDB.initialize()
+            self.VDB.initialize(vdb_name=VDB_name)
         elif mode == 'fit':
             ############################################################################################################
             raw_sources = config['raw_sources']

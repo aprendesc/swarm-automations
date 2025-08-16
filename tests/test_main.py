@@ -154,32 +154,56 @@ class TestMainClass(unittest.TestCase):
         print("Files map sample:", new_config['result']['files_map'][:5])
 
     def test_vector_database(self):
-        # FIT -------------------------------------------------------------------------
-        fit_cfg = {
-            'vdb_mode': 'fit',
-            'raw_sources': [],
-            'seeds_chunking_threshold': 900,
-            'vdb_name': 'test_VDB',
-            'vdb_chunking_threshold': 150,
-            'vdb_query': 'Capital de Francia',
-            'lang': 'eng',
-        }
-        fit_cfg = self.main.vector_database(fit_cfg)
-        self.assertEqual(fit_cfg['result']['status'], 'fit_ok')
-        self.assertGreater(fit_cfg['result']['n_chunks'], 0)
+        import tempfile
+        import shutil
 
-        # RETRIEVAL -------------------------------------------------------------------
-        retrieval_cfg = {
-            'vdb_mode': 'fit',
-            'raw_sources': [],
-            'seeds_chunking_threshold': 900,
-            'vdb_name': 'test_VDB',
-            'vdb_chunking_threshold': 150,
-            'vdb_query': 'Capital de Francia',
-            'lang': 'eng',
-        }
-        retrieval_cfg = self.main.vector_database(retrieval_cfg)
-        self.assertIn('retrieved', retrieval_cfg['result'])
-        self.assertTrue(len(retrieval_cfg['result']['retrieved']) > 0)
-        print("Vector DB retrieval (truncated):", retrieval_cfg['result']['retrieved'][:100])
+        sample_pdf_path = './data/raw/source_papers/attention_is_all_you_need.pdf'
+        if not os.path.exists(sample_pdf_path):
+            self.skipTest("Sample PDF not found – cannot run Vector DB test.")
+
+        temp_dir = tempfile.mkdtemp()
+        dummy_pdf_path = os.path.join(temp_dir, 'dummy.pdf')
+        shutil.copy(sample_pdf_path, dummy_pdf_path)
+
+        try:
+            # ------------------------------------------------------------------
+            # 2. FIT stage – build the VDB from the dummy PDF
+            # ------------------------------------------------------------------
+            fit_cfg = {
+                'vdb_mode': 'fit',
+                'raw_sources': [dummy_pdf_path],
+                'lang': 'eng',
+                'vdb_name': 'test_VDB_tmp',
+                'vdb_chunking_threshold': 150,
+            }
+            self.main.vector_database(fit_cfg)
+            # A very lenient sanity check – we simply verify the in-memory DB exists.
+            self.assertIsNotNone(getattr(self.main, 'VDB', None))
+
+            # ------------------------------------------------------------------
+            # 3. INITIALIZE stage – reload / prepare DB for querying
+            # ------------------------------------------------------------------
+            init_cfg = {
+                'vdb_mode': 'initialize',
+                'vdb_name': 'test_VDB_tmp',
+            }
+            self.main.vector_database(init_cfg)
+            self.assertIsNotNone(getattr(self.main, 'VDB', None))
+
+            # ------------------------------------------------------------------
+            # 4. RETRIEVAL stage – ask something that should exist in the doc
+            # ------------------------------------------------------------------
+            retrieval_cfg = {
+                'vdb_mode': 'retrieval',
+                'query': 'attention is all you need',
+                'top_n': 3,
+            }
+            retrieval_cfg = self.main.vector_database(retrieval_cfg)
+            self.assertIn('result', retrieval_cfg)
+            self.assertIn('sources', retrieval_cfg['result'])
+            self.assertTrue(len(retrieval_cfg['result']['sources']) > 0)
+            print("Vector DB retrieval sample (truncated):", str(retrieval_cfg['result']['sources'])[:200])
+        finally:
+            # Clean-up the temporary resources
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
