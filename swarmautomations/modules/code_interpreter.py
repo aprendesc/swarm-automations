@@ -11,7 +11,7 @@ class CodeInterpreter:
         self.cwd = cwd.replace("\\", "/")
         self.cwd_header = f"""
 import os
-os.chdir("{cwd}")
+os.chdir("{self.cwd}")
 """
 
     def initialize(self):
