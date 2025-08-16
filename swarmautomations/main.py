@@ -211,9 +211,13 @@ class MainClass():
         from eigenlib.LLM.sources_parser import SourcesParserClass
         from eigenlib.utils.data_utils import DataUtilsClass
         import os
+        import copy
         ############################################################################################################
         mode = config['vdb_mode']
+        vdb_wd = config['vdb_wd']
         ############################################################################################################
+        old_wd = copy.deepcopy(os.getcwd())
+        os.chdir(vdb_wd)
         if mode == 'initialize':
             VDB_name = config['vdb_name']
             ############################################################################################################
@@ -233,11 +237,17 @@ class MainClass():
             source_df = self.VDB.create(df['content'].sum(), separator='.', create_vectors=True, chunking_threshold=vdb_chunking_threshold)
             DataUtilsClass().save_dataset(source_df, path=os.environ['CURATED_DATA_PATH'], dataset_name=VDB_name, format='pkl', cloud=False)
         elif mode == 'retrieval':
+            if not hasattr(self, "VDB"):
+                VDB_name = config['vdb_name']
+                ############################################################################################################
+                self.VDB = VectorDatabaseClass(content_feature='steering')
+                self.VDB.initialize(vdb_name=VDB_name)
             ############################################################################################################
             query = config.get('query', '')
             top_n = int(config.get('top_n', 5))
             ############################################################################################################
             retrieved_text = self.VDB.get(query=query, top_n=top_n)
             config['result'] = {'sources': retrieved_text}
+        os.chdir(old_wd)
         return config
 

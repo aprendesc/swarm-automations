@@ -68,6 +68,8 @@ config = {
             'vdb_chunking_threshold': 150,
             'vdb_query': 'Capital de Francia',
             'lang': 'eng',
-        }
+            'vdb_wd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-automations',
+
+}
 
 ########################################################################################################################
