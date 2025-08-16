@@ -6,22 +6,11 @@ from swarmautomations.configs.test_config import config
 
 
 class TestMainClass(unittest.TestCase):
-    """Basic smoke-tests for every public method exposed in MainClass.
-
-    The goal is not to exhaustively verify the business logic (many methods rely on
-    external services / APIs) but to ensure that the new integration points do not
-    raise exceptions and return a result object that can be further consumed by
-    downstream calls.
-    """
-
     def setUp(self):
         self.test_delay = 1
         # Each test gets a fresh instance to avoid potential shared-state issues.
         self.main = MainClass({})
 
-    # ----------------------------------------------------------------------------------
-    # Existing tests
-    # ----------------------------------------------------------------------------------
     def test_computer_use_automation(self):
         import threading
         import time
@@ -163,9 +152,7 @@ class TestMainClass(unittest.TestCase):
         shutil.copy(sample_pdf_path, dummy_pdf_path)
 
         try:
-            # ------------------------------------------------------------------
-            # 2. FIT stage – build the VDB from the dummy PDF
-            # ------------------------------------------------------------------
+
             fit_cfg = {
                 'vdb_mode': 'fit',
                 'raw_sources': [dummy_pdf_path],
@@ -176,12 +163,9 @@ class TestMainClass(unittest.TestCase):
 
             }
             self.main.vector_database(fit_cfg)
-            # A very lenient sanity check – we simply verify the in-memory DB exists.
             self.assertIsNotNone(getattr(self.main, 'VDB', None))
 
-            # ------------------------------------------------------------------
-            # 3. INITIALIZE stage – reload / prepare DB for querying
-            # --------------------------------- ---------------------------------
+
             init_cfg = {
                 'vdb_mode': 'initialize',
                 'vdb_name': 'test_VDB_tmp',
@@ -191,9 +175,6 @@ class TestMainClass(unittest.TestCase):
             self.main.vector_database(init_cfg)
             self.assertIsNotNone(getattr(self.main, 'VDB', None))
 
-            # ------------------------------------------------------------------
-            # 4. RETRIEVAL stage – ask something that should exist in the doc
-            # ------------------------------------------------------------------
             retrieval_cfg = {
                 'vdb_mode': 'retrieval',
                 'query': 'attention is all you need',
@@ -207,6 +188,5 @@ class TestMainClass(unittest.TestCase):
             self.assertTrue(len(retrieval_cfg['result']['sources']) > 0)
             print("Vector DB retrieval sample (truncated):", str(retrieval_cfg['result']['sources'])[:200])
         finally:
-            # Clean-up the temporary resources
             shutil.rmtree(temp_dir, ignore_errors=True)
 
