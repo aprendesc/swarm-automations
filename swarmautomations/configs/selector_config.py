@@ -1,74 +1,108 @@
+from swarmautomations.configs.test_config import config
 
-apps = {'1': 'standby',
-        '2': 'call_to_notion',
-        '3': 'listen_smartwatch_notes',
-        '4': 'computer_use_automation',
-        '5': 'youtube_to_notion',
-        '6': 'sources_parser_and_summarizer',
-        '7': 'podcast_generation',
-        }
-print("""
-{'1': 'standby',
-        '2': 'call_to_notion',
-        '3': 'listen_smartwatch_notes',
-        '4': 'computer_use_automation',
-        '5': 'youtube_to_notion',
-        '6': 'sources_parser_and_summarizer',
-        '7': 'podcast_generation',
-        }
-""")
-sel_n = input('Select app config: ')
-sel_app = apps[sel_n]
+menu = {
+    '1': 'standby',
+    '2': 'call_to_notion',
+    '3': 'listen_smartwatch_notes',
+    '4': 'computer_use_automation',
+    '5': 'youtube_to_notion',
+    '6': 'sources_parser_and_summarizer',
+    '7': 'podcast_generation',
+    '8': 'code_interpreter',
+    '9': 'intelligent_web_search',
+    '10': 'google_search',
+    '11': 'browse_url',
+    '12': 'local_file_operations_tools',
+    '13': 'get_files_map',
+    '14': 'vector_database',
+}
 
-if sel_app == 'standby':
-    config = {
-        'time_interval': 1,
-        }
+print("Aplicaciones disponibles:")
+for k, v in menu.items():
+    print(f"  {k}. {v}")
 
-elif sel_app == 'call_to_notion':
-    config = {}
-
-elif sel_app == 'listen_smartwatch_notes':
-    config = {
-        'audio_path': 'G:/Mi unidad/utils/Easy Voice Recorder',
-        'sw_notion_page': '23d2a599e98580d6b20dc30f999a1a2c',
-    }
-
-elif sel_app == 'youtube_to_notion':
-    url = input('URL: ')
-    summarize = input('Summarize? (y/n): ')=='y'
-    if summarize:
-        n_sections = input('Select n sections: ')
-    else:
-        n_sections = None
-    config = {
-        'yttn_video_url': url,
-        'yttn_notion_page': '2432a599e985804692b7d6982895a2b2',
-        'yttn_summarize': True,
-        'yttn_n_sections': n_sections,
-        }
-
-elif sel_app == 'sources_parser_and_summarizer':
-    source = input('Introduce source:')
-    summarize = input('Summarize? (y/n): ')=='y'
-    if summarize:
-        n_sections = input('Select n sections: ')
-    else:
-        n_sections = None
-    to_notion = input('Send to notion?(y/n)')=='y'
-    config = {
-        'parse': True,
-        'to_notion': to_notion,
-        'summarize': summarize,
-        'source': source,
-        'n_sections': n_sections,
-        'summarizer_notion_page': '2432a599e985804692b7d6982895a2b2',
-    }
-
-elif sel_app == 'podcast_generation':
-    config = {
-            'max_iter': 15,
-            'podcast_folder_path': './data/processed/podcast_pipeline_stage',
-        }
+selection = input('Select app: ').strip()
+app_name = menu.get(selection)
 
 ########################################################################################################################
+# Bloques independientes por método
+########################################################################################################################
+if app_name == 'standby':
+    config['time_interval'] = input('Select time_interval: ')
+
+elif app_name == 'call_to_notion':
+    # No necesita parámetros adicionales
+    pass
+
+elif app_name == 'listen_smartwatch_notes':
+    config['audio_path'] = input('Select audio_path: ')
+    config['sw_notion_page'] = input('Select sw_notion_page: ')
+
+elif app_name == 'computer_use_automation':
+    config['instructions'] = input('Select instructions: ')
+    config['model'] = input('Select model: ')
+    config['continue_action'] = input('Select continue_action: ')
+
+elif app_name == 'youtube_to_notion':
+    config['yttn_video_url'] = input('Select yttn_video_url: ')
+    config['yttn_notion_page'] = input('Select yttn_notion_page: ')
+    config['yttn_summarize'] = input('Select yttn_summarize: ')
+    config['yttn_n_sections'] = input('Select yttn_n_sections: ')
+
+elif app_name == 'sources_parser_and_summarizer':
+    config['source_path_or_url'] = input('Select source_path_or_url: ')
+    config['summarizer_notion_page'] = input('Select summarizer_notion_page: ')
+    config['parse'] = input('Select parse: ')
+    config['summarize'] = input('Select summarize: ')
+    config['n_sections'] = input('Select n_sections: ')
+    config['to_notion'] = input('Select to_notion: ')
+
+elif app_name == 'podcast_generation':
+    config['max_iter'] = input('Select max_iter: ')
+    config['podcast_folder_path'] = input('Select podcast_folder_path: ')
+
+elif app_name == 'code_interpreter':
+    config['programming_language'] = input('Select programming_language: ')
+    config['code'] = input('Select code: ')
+    config['interpreter_launcher'] = input('Select interpreter_launcher: ')
+    config['interpreter_cwd'] = input('Select interpreter_cwd: ')
+    config['interpreter_path_dirs'] = input('Select interpreter_path_dirs: ')
+
+elif app_name == 'intelligent_web_search':
+    config['query'] = input('Select query: ')
+    config['num_results'] = input('Select num_results: ')
+    config['summarize_search'] = input('Select summarize_search: ')
+
+elif app_name == 'google_search':
+    config['query'] = input('Select query: ')
+    config['num_results'] = input('Select num_results: ')
+
+elif app_name == 'browse_url':
+    config['urls'] = input('Select urls: ')
+
+elif app_name == 'local_file_operations_tools':
+    config['mode'] = input('Select mode: ')
+    config['files_cwd'] = input('Select files_cwd: ')
+    config['file_path'] = input('Select file_path: ')
+    config['content'] = input('Select content: ')
+
+elif app_name == 'get_files_map':
+    config['map_base_path'] = input('Select map_base_path: ')
+    config['map_root_dir'] = input('Select map_root_dir: ')
+
+elif app_name == 'vector_database':
+    config['vdb_mode'] = input('Select vdb_mode: ')
+    config['raw_sources'] = input('Select raw_sources: ')
+    config['vdb_name'] = input('Select vdb_name: ')
+    config['vdb_chunking_threshold'] = input('Select vdb_chunking_threshold: ')
+    config['lang'] = input('Select lang: ')
+    config['vdb_wd'] = input('Select vdb_wd: ')
+    config['query'] = input('Select query: ')
+    config['top_n'] = input('Select top_n: ')
+
+else:
+    raise ValueError('Método no soportado o selección errónea.')
+
+print('\nConfiguración final:')
+for k, v in config.items():
+    print(f"{k}: {v}")
