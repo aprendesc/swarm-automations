@@ -208,26 +208,35 @@ class MainClass():
 
     def vector_database(self, config):
         from eigenlib.LLM.vector_database import VectorDatabaseClass
-        ################################################################################################################
-        mode = config['mode']                    # 'fit' | 'retrieval'
-        vdb_name = config.get('vdb_name', None)
-        reset_db = config.get('reset_db', False)
-        source = config.get('source', '')
-        query = config.get('query', '')
-        top_n = int(config.get('top_n', 5))
-        create_vectors = config.get('create_vectors', True)
-        ################################################################################################################
-        if self._vdb is None or reset_db:
-            self._vdb = VectorDatabaseClass(vdb_name=vdb_name)
-            self._vdb.initialize()
-
-        if mode == 'fit':
-            vdb_df = self._vdb.create(source, create_vectors=create_vectors)
-            self._vdb.source_df = vdb_df
-            config['result'] = {'status': 'fit_ok', 'n_chunks': len(vdb_df)}
-
+        from eigenlib.LLM.sources_parser import SourcesParserClass
+        from eigenlib.utils.data_utils import DataUtilsClass
+        import os
+        ############################################################################################################
+        mode = config['vdb_mode']
+        ############################################################################################################
+        if mode == 'initialize':
+            ############################################################################################################
+            self.VDB = VectorDatabaseClass(content_feature='steering')
+            self.VDB.initialize()
+        elif mode == 'fit':
+            ############################################################################################################
+            raw_sources = config['raw_sources']
+            lang = config['lang']
+            VDB_name = config['vdb_name']
+            vdb_chunking_threshold = config['vdb_chunking_threshold']
+            ############################################################################################################
+            df = SourcesParserClass().run_batch(raw_sources, lang=lang)
+            #INDEXATION
+            self.VDB = VectorDatabaseClass(content_feature='steering')
+            self.VDB.initialize()
+            source_df = self.VDB.create(df['content'].sum(), separator='.', create_vectors=True, chunking_threshold=vdb_chunking_threshold)
+            DataUtilsClass().save_dataset(source_df, path=os.environ['CURATED_DATA_PATH'], dataset_name=VDB_name, format='pkl', cloud=False)
         elif mode == 'retrieval':
-            retrieved_text = self._vdb.get(query=query, top_n=top_n)
-            config['result'] = {'retrieved': retrieved_text}
-
+            ############################################################################################################
+            query = config.get('query', '')
+            top_n = int(config.get('top_n', 5))
+            ############################################################################################################
+            retrieved_text = self.VDB.get(query=query, top_n=top_n)
+            config['result'] = {'sources': retrieved_text}
         return config
+

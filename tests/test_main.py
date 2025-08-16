@@ -156,8 +156,12 @@ class TestMainClass(unittest.TestCase):
     def test_vector_database(self):
         # FIT -------------------------------------------------------------------------
         fit_cfg = {
-            'mode': 'fit',
-            'source': 'Uno. Dos. Tres. Este es un pequeño texto de prueba para indexar. Cuatro. Cinco.',
+            'vdb_mode': 'fit',
+            'raw_sources': [],
+            'seeds_chunking_threshold': 900,
+            'vdb_name': 'test_VDB',
+            'vdb_chunking_threshold': 150,
+            'vdb_query': 'Capital de Francia',
         }
         fit_cfg = self.main.vector_database(fit_cfg)
         self.assertEqual(fit_cfg['result']['status'], 'fit_ok')
@@ -165,9 +169,12 @@ class TestMainClass(unittest.TestCase):
 
         # RETRIEVAL -------------------------------------------------------------------
         retrieval_cfg = {
-            'mode': 'retrieval',
-            'query': 'prueba',
-            'top_n': 3,
+            'vdb_mode': 'fit',
+            'raw_sources': [],
+            'seeds_chunking_threshold': 900,
+            'vdb_name': 'test_VDB',
+            'vdb_chunking_threshold': 150,
+            'vdb_query': 'Capital de Francia',
         }
         retrieval_cfg = self.main.vector_database(retrieval_cfg)
         self.assertIn('retrieved', retrieval_cfg['result'])

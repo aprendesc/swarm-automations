@@ -59,6 +59,14 @@ config = {
             # GET FILES MAP
             'map_base_path': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos',
             'map_root_dir': 'swarm-automations',
+
+            # DEF VECTOR DATABASE CREATE
+            'vdb_mode': 'fit',
+            'raw_sources': [],
+            'seeds_chunking_threshold': 900,
+            'vdb_name': 'test_VDB',
+            'vdb_chunking_threshold': 150,
+            'vdb_query': 'Capital de Francia',
         }
 
 ########################################################################################################################
