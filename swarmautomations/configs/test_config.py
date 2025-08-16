@@ -52,8 +52,8 @@ config = {
 
             # LOCAL FILE OPERATIONS
             'mode': 'read_file',
-            'local_base_path': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos',
-            'file_path': 'swarm-automations/swarmautomations/main.py',
+            'files_cwd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-automations',
+            'file_path': './swarmautomations/main.py',
             'content': 'no_content',
 
             # GET FILES MAP

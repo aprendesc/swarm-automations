@@ -170,12 +170,12 @@ class MainClass():
         import os, copy
         ################################################################################################################
         file_path = config['file_path']
-        base_path = config['local_base_path']
+        files_cwd = config['files_cwd']
         mode = config['mode']
         file_content = config.get('content', None)
         ################################################################################################################
         old_wd = copy.deepcopy(os.getcwd())
-        os.chdir(base_path)
+        os.chdir(files_cwd)
         if mode == 'read_file':
             with open(file_path, 'r', encoding='utf-8') as f:
                 contenido = f.read()

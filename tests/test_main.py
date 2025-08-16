@@ -126,9 +126,10 @@ class TestMainClass(unittest.TestCase):
             # Write to the file
             config_write = {
                 'file_path': tmp_path,
+
                 'mode': 'write_file',
                 'content': "print('Hola desde test')",
-                'local_base_path': './'
+                'files_cwd': './'
             }
             self.main.local_file_operations_tools(config_write)
 
@@ -137,7 +138,7 @@ class TestMainClass(unittest.TestCase):
                 'file_path': tmp_path,
                 'mode': 'read_file',
                 'content': None,
-                'local_base_path': './'
+                'files_cwd': './'
             }
             result = self.main.local_file_operations_tools(config_read)
             self.assertIn("Hola desde test", result['result']['file_content'])
