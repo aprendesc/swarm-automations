@@ -70,6 +70,8 @@ config = {
             'lang': 'eng',
             'vdb_wd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-automations',
 
+            # EXTRACT INFO
+            'extraction_landing_page_id': '2522a599e985808aa4c9fbba83fe3c67',
 }
 
 ########################################################################################################################

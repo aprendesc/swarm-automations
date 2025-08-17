@@ -251,3 +251,69 @@ class MainClass():
         os.chdir(old_wd)
         return config
 
+    def extract_info(self, config):
+        import threading
+        import time
+        from pynput import keyboard as kb
+        import pyperclip
+        from eigenlib.utils.notion_utils import NotionUtilsClass
+        ############################################################################################################
+        page_id = config.get('extraction_landing_page_id')
+        run_in_background = bool(config.get('run_in_background', False))
+        NU = NotionUtilsClass()
+        CTRL_KEYS = {kb.Key.ctrl, kb.Key.ctrl_l, kb.Key.ctrl_r}
+        ANGLE_KEY_CHAR = '<'
+        ANGLE_KEY_VK = 226  # VK_OEM_102 en Windows
+        ############################################################################################################
+        def _copy_selected():
+            controller = kb.Controller()
+            controller.press(kb.Key.ctrl)
+            controller.press('c')
+            controller.release('c')
+            controller.release(kb.Key.ctrl)
+            time.sleep(0.06)
+            return pyperclip.paste().strip()
+
+        def _listener_worker():
+            print("🟢 Listener activo – pulsa Ctrl+< para enviar selección a Notion.")
+            ctrl_pressed = False
+
+            def on_press(key):
+                nonlocal ctrl_pressed
+                if key in CTRL_KEYS:
+                    ctrl_pressed = True
+                    return
+
+                if not ctrl_pressed:
+                    return
+
+                # — Detectamos la tecla < —
+                is_angle_char = isinstance(key, kb.KeyCode) and key.char == ANGLE_KEY_CHAR
+                is_angle_vk = getattr(key, 'vk', None) == ANGLE_KEY_VK
+                if is_angle_char or is_angle_vk:
+                    texto = _copy_selected()
+                    if texto:
+                        try:
+                            NU.write(page_id=page_id, texto=texto)
+                            print(f"✅ Enviado a Notion ({len(texto)} car.).")
+                        except Exception as e:
+                            print(f"❌ Error al enviar a Notion: {e}")
+                    else:
+                        print("ℹ️  Portapapeles vacío – nada que enviar.")
+
+            def on_release(key):
+                nonlocal ctrl_pressed
+                if key in CTRL_KEYS:
+                    ctrl_pressed = False
+
+            with kb.Listener(on_press=on_press, on_release=on_release) as listener:
+                listener.join()
+
+        if run_in_background:
+            thread = threading.Thread(target=_listener_worker, daemon=False)
+            thread.start()
+            config['result'] = {'listener_started': True, 'background': True, 'thread': thread}
+        else:
+            _listener_worker()
+            config['result'] = {'listener_started': True, 'background': False}
+        return config
