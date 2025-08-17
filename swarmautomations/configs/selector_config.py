@@ -29,7 +29,7 @@ app_name = menu.get(selection)
 # Bloques independientes por método
 ########################################################################################################################
 if app_name == 'standby':
-    #config['time_interval'] = input('Select time_interval: ')
+    config['time_interval'] = int(input('Select time_interval: '))
     pass
 
 elif app_name == 'call_to_notion':
