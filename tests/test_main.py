@@ -71,8 +71,61 @@ class TestMainClass(unittest.TestCase):
         time.sleep(3)
 
     def test_code_interpreter(self):
-        new_config = self.main.code_interpreter(config)
-        print(new_config['result'])
+        config = {
+            'programming_language': 'python',
+            'code': 'print("Hola mundo")',
+        }
+        config = self.main.code_interpreter(config)
+        assert config['result']['output'] == 'Hola mundo\n'
+
+        config = {
+            'programming_language': 'cmd',
+            'code': 'echo Hola mundo',
+        }
+        config = self.main.code_interpreter(config)
+        assert config['result']['output'] == 'Hola mundo\n'
+
+    def test_local_file_operations(self):
+        #Single test
+        #result = self.main.local_file_operations_tools(config)
+        #print(result['result'])
+
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as tmp:
+            tmp_path = tmp.name
+
+        # Write to the file
+        config_write = {
+            'file_path': tmp_path,
+            'mode': 'write_file',
+            'content': "print('Hola desde test')",
+            'interpreter_launcher': r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence\.venv\Scripts\python.exe",
+            'interpreter_cwd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-intelligence',
+            'interpreter_path_dirs': [r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence", r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"],
+            'programming_language': 'python',
+        }
+        self.main.local_file_operations_tools(config_write)
+
+        # Read from the file
+        config_read = {
+            'file_path': tmp_path,
+            'mode': 'read_file',
+            'content': None,
+            'interpreter_launcher': r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence\.venv\Scripts\python.exe",
+            'interpreter_cwd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-intelligence',
+            'interpreter_path_dirs': [r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence", r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"],
+            'programming_language': 'python',
+        }
+        result = self.main.local_file_operations_tools(config_read)
+        self.assertIn("Hola desde test", result['result']['file_content'])
+        print("✅ Local file operations test passed")
+        os.remove(tmp_path)
+
+    def test_get_files_map(self):
+        config['map_root_dir'] = './'
+        new_config = self.main.get_files_map(config)
+        self.assertIn('files_map', new_config['result'])
+        print("Files map sample:", new_config['result']['files_map'][0:5])
 
     def test_intelligent_web_search(self):
         new_config = self.main.intelligent_web_search(config)
@@ -100,47 +153,6 @@ class TestMainClass(unittest.TestCase):
         self.assertIn('summary', br_config['result'])
         self.assertTrue(len(br_config['result']['summary']) > 0)
         print("Browse URL summary (truncated):", br_config['result']['summary'][:200])
-
-    def test_local_file_operations(self):
-        #Single test
-        result = self.main.local_file_operations_tools(config)
-        print(result['result'])
-
-        import tempfile
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as tmp:
-            tmp_path = tmp.name
-        try:
-            # Write to the file
-            config_write = {
-                'file_path': tmp_path,
-
-                'mode': 'write_file',
-                'content': "print('Hola desde test')",
-                'files_cwd': './'
-            }
-            self.main.local_file_operations_tools(config_write)
-
-            # Read from the file
-            config_read = {
-                'file_path': tmp_path,
-                'mode': 'read_file',
-                'content': None,
-                'files_cwd': './'
-            }
-            result = self.main.local_file_operations_tools(config_read)
-            self.assertIn("Hola desde test", result['result']['file_content'])
-            print("✅ Local file operations test passed")
-        finally:
-            os.remove(tmp_path)
-
-    def test_get_files_map(self):
-        base_path = f"C:/Users/{os.environ['USERNAME']}/Desktop/proyectos"
-        target_project_folder = 'swarm-automations'
-        config['base_path'] = os.path.join(base_path, target_project_folder)
-        config['root_dir'] = './'
-        new_config = self.main.get_files_map(config)
-        self.assertIn('files_map', new_config['result'])
-        print("Files map sample:", new_config['result']['files_map'][:5])
 
     def test_vector_database(self):
         import tempfile
@@ -189,4 +201,17 @@ class TestMainClass(unittest.TestCase):
             print("Vector DB retrieval sample (truncated):", str(retrieval_cfg['result']['sources'])[:200])
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def test_deploy_project_server(self):
+        import threading
+        import time
+        ################################################################################################################
+        config = {
+            'programming_language': 'python',
+            'code': 'print("Hola mundo!")',
+        }
+        standby_thread = threading.Thread(target=self.main.deploy_project_server, args=(config,), daemon=True)
+        standby_thread.start()
+        time.sleep(5)
+
 

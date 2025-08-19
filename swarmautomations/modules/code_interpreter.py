@@ -26,13 +26,6 @@ os.chdir("{self.cwd}")
                     env = os.environ.copy()
                     env["PYTHONPATH"] = os.pathsep.join(self.path_folders)
                     env["PYTHONUNBUFFERED"] = "1"
-                    #import tempfile
-                    #def run_code(code: str, env=None):
-                    #    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
-                    #        f.write(code)
-                    #        f.flush()
-                    #        return subprocess.run([self.interpreter_launcher, f.name], text=True, capture_output=True, env=env)
-                    #response = run_code(self.cwd_header + code)
                     response = subprocess.run([self.interpreter_launcher, "-c", self.cwd_header + code], text=True, capture_output=True, env=env)
                 result = response.stdout
                 error = response.stderr or None

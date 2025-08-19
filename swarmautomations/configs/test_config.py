@@ -38,27 +38,21 @@ config = {
 
             # CODE INTERPRETER
             'programming_language': 'python',
-            'code': 'print(os.listdir())',
-            'interpreter_launcher': r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence\.venv\Scripts\python.exe",
-            'interpreter_cwd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos',#/swarm-intelligence',
-            'interpreter_path_dirs': [r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\swarm-intelligence",
-                                 r"C:\Users\AlejandroPrendesCabo\Desktop\proyectos\eigenlib"],
+            'code': 'print("Hola mundo!")',
+
+            # LOCAL FILE OPERATIONS
+            'mode': 'read_file',
+            'file_path': './swarmautomations/main.py',
+            'content': 'no_content',
+
+            # GET FILES MAP
+            'map_root_dir': './',
 
             # INTELLIGENT / GOOGLE WEB SEARCH
             'query': 'F22 Raptor',
             'num_results': 2,
             'summarize_search': True,
             # browse_url recibirá "urls" dinámicamente desde google_search durante los tests
-
-            # LOCAL FILE OPERATIONS
-            'mode': 'read_file',
-            'files_cwd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-automations',
-            'file_path': './swarmautomations/main.py',
-            'content': 'no_content',
-
-            # GET FILES MAP
-            'map_base_path': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos',
-            'map_root_dir': 'swarm-automations',
 
             # DEF VECTOR DATABASE CREATE
             'vdb_mode': 'fit',
@@ -72,6 +66,9 @@ config = {
 
             # EXTRACT INFO
             'extraction_landing_page_id': '2522a599e985808aa4c9fbba83fe3c67',
-}
+
+            # DEPLOY PROJECT SERVER
+            'launch_master': True,
+            }
 
 ########################################################################################################################

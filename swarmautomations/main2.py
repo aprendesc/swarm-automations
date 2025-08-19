@@ -118,29 +118,77 @@ class MainClass():
         PodcastGeneration().run(max_iter, podcast_path)
         return config
 
+    def swe_development_tools(self, config):
+        from swarmautomations.modules.code_interpreter import CodeInterpreter
+        import os, copy
+        ################################################################################################################
+        interpreter_launcher = config['interpreter_launcher']
+        interpreter_cwd = config['interpreter_cwd']
+        interpreter_path_dirs = config['interpreter_path_dirs']
+        ################################################################################################################
+        mode = config['code_interpreter']
+        if mode == 'code_interpreter':
+            ################################################################################################################
+            programming_language = config['programming_language']
+            code = config['code']
+            ################################################################################################################
+            cit = CodeInterpreter(interpreter_launcher, interpreter_path_dirs, cwd=interpreter_cwd)
+            config['result'] = cit.run(programming_language=programming_language, code=code)
+        elif mode == 'local_file_operations':
+            ################################################################################################################
+            file_path = config['file_path']
+            files_cwd = config['files_cwd']
+            mode = config['mode']
+            file_content = config.get('content', None)
+            ################################################################################################################
+            old_wd = copy.deepcopy(os.getcwd())
+            os.chdir(files_cwd)
+            if mode == 'read_file':
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    contenido = f.read()
+                config['result'] = {'file_content': contenido}
+            elif mode == 'write_file':
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(file_content)
+                config['result'] = {'tool_answer': 'Content successfully written to file.'}
+            os.chdir(old_wd)
+        elif mode == 'get_files_map':
+            ################################################################################################################
+            map_base_path = config['map_base_path']
+            map_root_dir = config['map_root_dir']
+            ################################################################################################################
+            def project_map(root_dir, excluded=None):
+                if excluded is None:
+                    excluded = ['__', '.venv', 'git', '.env', '.pytest', '.idea']
+                map = []
+                for root, _, files in os.walk(root_dir):
+                    for name in files:
+                        file_path = os.path.join(root, name)
+                        if any(sub in file_path for sub in excluded):
+                            continue
+                        map.append(file_path)
+                return map
+
+            old_wd = copy.deepcopy(os.getcwd())
+            os.chdir(map_base_path)
+            map = project_map(map_root_dir)
+            os.chdir(old_wd)
+            config['result'] = {'files_map': map}
+
+
+        return config
+
     def code_interpreter(self, config):
-        import subprocess
-        import sys
-        from io import StringIO
+        from swarmautomations.modules.code_interpreter import CodeInterpreter
         ################################################################################################################
+        interpreter_launcher = config['interpreter_launcher']
+        interpreter_cwd = config['interpreter_cwd']
+        interpreter_path_dirs = config['interpreter_path_dirs']
         programming_language = config['programming_language']
-        code = config['code']
+        code = config['code'].replace("\\", "/")
         ################################################################################################################
-        if programming_language == 'python':
-            def run_code(code):
-                old_stdout = sys.stdout
-                sys.stdout = buffer = StringIO()
-                try:
-                    exec(code)
-                    return {'output': buffer.getvalue(), 'error': ''}
-                except Exception as e:
-                    return {'output': buffer.getvalue(), 'error': str(e)}
-                finally:
-                    sys.stdout = old_stdout
-            config['result'] = run_code(code)
-        else:
-            completed = subprocess.run(code, shell=True, capture_output=True, text=True)
-            config['result'] = {'output': completed.stdout, 'error': completed.stderr or None}
+        cit = CodeInterpreter(interpreter_launcher, interpreter_path_dirs, cwd=interpreter_cwd)
+        config['result'] = cit.run(programming_language=programming_language, code=code)
         return config
 
     def local_file_operations_tools(self, config):
@@ -149,33 +197,47 @@ class MainClass():
         mode = config['mode']
         file_content = config.get('content', None)
         ################################################################################################################
+        code = f"""
+if '{mode}' == 'read_file':
+    with open('{file_path}', 'r', encoding='utf-8') as f:
+        contenido = f.read()
+    print(contenido)
+elif '{mode}' == 'write_file':
+    with open('{file_path}', 'w', encoding='utf-8') as f:
+        file_content = {repr(file_content)}
+        f.write(file_content)
+    print('Content successfully written to file.')
+"""
+        config['code'] = code
+        config = self.code_interpreter(config)
         if mode == 'read_file':
-            with open(file_path, 'r', encoding='utf-8') as f:
-                contenido = f.read()
-            config['result'] = {'file_content': contenido}
-        elif mode == 'write_file':
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(file_content)
-            config['result'] = {'tool_answer': 'Content successfully written to file.'}
+            config['result'] = {'file_content': config['result']['result'], 'read_error': config['result']['error']}
+        else:
+            config['result'] = {'result': config['result']['result'], 'write_error': config['result']['error']}
         return config
 
     def get_files_map(self, config):
-        import os
         ################################################################################################################
         map_root_dir = config['map_root_dir']
         ################################################################################################################
-        def project_map(root_dir, excluded='auto'):
-            if excluded == 'auto':
-                excluded = ['__', '.venv', 'git', '.env', '.pytest', '.idea']
-            map = []
-            for root, _, files in os.walk(root_dir):
-                for name in files:
-                    file_path = os.path.join(root, name)
-                    if any(sub in file_path for sub in excluded):
-                        continue
-                    map.append(file_path)
-            return map
-        map = project_map(map_root_dir)
+        code = f"""
+def project_map(root_dir, excluded='auto'):
+    if excluded == 'auto':
+        excluded = ['__', '.venv', 'git', '.env', '.pytest', '.idea']
+    map = []
+    for root, _, files in os.walk(root_dir):
+        for name in files:
+            file_path = os.path.join(root, name)
+            if any(sub in file_path for sub in excluded):
+                continue
+            map.append(file_path)
+    return map
+map = project_map('{map_root_dir}')
+print(map)
+"""
+        config['code'] = code
+        config = self.code_interpreter(config)
+        map = config['result']
         config['result'] = {'files_map': map}
         return config
 
@@ -210,6 +272,8 @@ class MainClass():
         result = ParallelUtilsClass().run_in_parallel(sp.run, {}, {'file_path': urls}, n_threads=len(urls), use_processes=False)
         config['result'] = {'summary': '\n'.join(result)}
         return config
+
+
 
     def vector_database(self, config):
         from eigenlib.LLM.vector_database import VectorDatabaseClass
@@ -322,59 +386,3 @@ class MainClass():
             _listener_worker()
             config['result'] = {'listener_started': True, 'background': False}
         return config
-
-    def deploy_project_server(self, config):
-        from swarmcompute.main import MainClass as SCMainClass
-        import time
-        ############################################################################################################
-        launch_master = config['launch_master']
-        ############################################################################################################
-        # MASTER CONFIGURATION
-        master_config = {
-            # NANO NET
-            'mode': 'master',
-            'master_address': 'tcp://localhost:5005',
-            'password': 'internal_password',
-            'node_name': None,
-            'node_method': None,
-            'address_node': None,
-            'payload': None,
-            'delay': None,
-        }
-        sc_main = SCMainClass(master_config)
-        if launch_master:
-            sc_main.launch_personal_net(master_config)
-
-        # NODE CONFIGURATION
-        def aux(method, config):
-            sel_method = getattr(self, method)
-            return sel_method(config)
-        node_config = {
-            # NANO NET
-            'mode': 'node',
-            'master_address': 'tcp://localhost:5005',
-            'password': 'internal_password',
-            'node_name': 'sa_tools_node',
-            'node_method': aux,
-            'address_node': 'test_node',
-            'payload': None,
-            'delay': 0.5,
-        }
-        sc_main.launch_personal_net(node_config)
-
-        # TEST CONNECTION
-        config = {
-            # NANO NET
-            'mode': 'client',
-            'master_address': 'tcp://localhost:5005',
-            'password': 'internal_password',
-            'node_name': 'client_node',
-            'node_method': aux,
-            'address_node': 'sa_tools_node',
-            'payload': {'method': 'code_interpreter','config':config},
-            'delay': 1,
-        }
-        response = sc_main.launch_personal_net(config)['response']
-        print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
-        while True:
-            time.sleep(10)

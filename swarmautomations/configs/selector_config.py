@@ -16,6 +16,7 @@ menu = {
     '13': 'get_files_map',
     '14': 'vector_database',
     '15': 'extract_info',
+    '16': 'deploy_project_server',
 }
 
 print("Aplicaciones disponibles:")
@@ -116,6 +117,10 @@ elif app_name == 'vector_database':
 
 elif app_name == 'extract_info':
     #config['extraction_landing_page_id'] = input('Select extraction_landing_page_id: ')
+    pass
+
+elif app_name == 'deploy_project_server':
+    config['launch_master'] = input('Launch master? (y/n): ') == 'y'
     pass
 
 else:
