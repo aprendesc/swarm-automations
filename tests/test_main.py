@@ -206,6 +206,6 @@ class TestMainClass(unittest.TestCase):
         }
         standby_thread = threading.Thread(target=self.main.deploy_project_server, args=(config,), daemon=True)
         standby_thread.start()
-        time.sleep(500)
+        time.sleep(10)
 
 

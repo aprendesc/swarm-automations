@@ -341,41 +341,41 @@ class MainClass():
         if launch_master:
             sc_main.launch_personal_net(master_config)
 
-        # NODE CONFIGURATION
-        def aux(method, config, selected_environment):
-            ProjectSetup().init(base_path=os.environ['BASE_PATH'], repo_folder=selected_environment, verbose=False)
-            sel_method = getattr(self, method)
-            return sel_method(config)
-        node_config = {
-            # NANO NET
-            'mode': 'node',
-            'master_address': 'tcp://localhost:5005',
-            'password': internal_password,
-            'node_name': node_name,
-            'node_method': aux,
-            'address_node': None,
-            'payload': None,
-            'delay': node_delay,
-        }
-        sc_main.launch_personal_net(node_config)
+        else:
+            # NODE CONFIGURATION
+            def aux(method, config):
+                sel_method = getattr(self, method)
+                return sel_method(config)
+            node_config = {
+                # NANO NET
+                'mode': 'node',
+                'master_address': 'tcp://localhost:5005',
+                'password': internal_password,
+                'node_name': node_name,
+                'node_method': aux,
+                'address_node': None,
+                'payload': None,
+                'delay': node_delay,
+            }
+            sc_main.launch_personal_net(node_config)
 
-        # TEST CONNECTION
-        test_config = {
-            'programming_language': 'python',
-            'code': 'print("Hola mundo!")',
-        }
-        config = {
-            # NANO NET
-            'mode': 'client',
-            'master_address': 'tcp://localhost:5005',
-            'password': internal_password,
-            'node_name': 'client_node',
-            'node_method': aux,
-            'address_node': node_name,
-            'payload': {'method': 'code_interpreter','config':test_config, 'selected_environment':os.environ['REPO_FOLDER']},
-            'delay': 1,
-        }
-        response = sc_main.launch_personal_net(config)['response']
-        print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
+            # TEST CONNECTION
+            test_config = {
+                'programming_language': 'python',
+                'code': 'print("Hola mundo!")',
+            }
+            config = {
+                # NANO NET
+                'mode': 'client',
+                'master_address': 'tcp://localhost:5005',
+                'password': internal_password,
+                'node_name': 'client_node',
+                'node_method': aux,
+                'address_node': node_name,
+                'payload': {'method': 'code_interpreter','config':test_config},
+                'delay': 1,
+            }
+            response = sc_main.launch_personal_net(config)['response']
+            print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
         while True:
             time.sleep(10)
