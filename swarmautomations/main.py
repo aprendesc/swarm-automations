@@ -1,7 +1,10 @@
+import os
+
+from eigenlib.utils.project_setup import ProjectSetup
+
 class MainClass():
     def __init__(self, config):
-        self._vdb = None  # Almacena una instancia viva entre llamadas
-        self._config = config
+        ProjectSetup().init()
 
     """Automations"""
     def standby(self, config):
@@ -179,16 +182,6 @@ class MainClass():
         config['result'] = {'files_map': map}
         return config
 
-    def intelligent_web_search(self, config):
-        from swarmautomations.modules.intelligent_web_search import IntelligentWebSearch
-        ################################################################################################################
-        query = config['query']
-        num_results = config['num_results']
-        summarize = config['summarize_search']
-        ################################################################################################################
-        config['result'] = IntelligentWebSearch().run(query, num_results, summarize)
-        return config
-
     def google_search(self, config):
         from googlesearch import search
         ################################################################################################################
@@ -328,13 +321,16 @@ class MainClass():
         import time
         ############################################################################################################
         launch_master = config['launch_master']
+        node_name = config['node_name']
+        node_delay = config['node_delay']
+        internal_password = 'internal_pass'
         ############################################################################################################
         # MASTER CONFIGURATION
         master_config = {
             # NANO NET
             'mode': 'master',
             'master_address': 'tcp://localhost:5005',
-            'password': 'internal_password',
+            'password': internal_password,
             'node_name': None,
             'node_method': None,
             'address_node': None,
@@ -346,32 +342,37 @@ class MainClass():
             sc_main.launch_personal_net(master_config)
 
         # NODE CONFIGURATION
-        def aux(method, config):
+        def aux(method, config, selected_environment):
+            ProjectSetup().init(base_path=os.environ['BASE_PATH'], repo_folder=selected_environment, verbose=False)
             sel_method = getattr(self, method)
             return sel_method(config)
         node_config = {
             # NANO NET
             'mode': 'node',
             'master_address': 'tcp://localhost:5005',
-            'password': 'internal_password',
-            'node_name': 'sa_tools_node',
+            'password': internal_password,
+            'node_name': node_name,
             'node_method': aux,
-            'address_node': 'test_node',
+            'address_node': None,
             'payload': None,
-            'delay': 0.5,
+            'delay': node_delay,
         }
         sc_main.launch_personal_net(node_config)
 
         # TEST CONNECTION
+        test_config = {
+            'programming_language': 'python',
+            'code': 'print("Hola mundo!")',
+        }
         config = {
             # NANO NET
             'mode': 'client',
             'master_address': 'tcp://localhost:5005',
-            'password': 'internal_password',
+            'password': internal_password,
             'node_name': 'client_node',
             'node_method': aux,
-            'address_node': 'sa_tools_node',
-            'payload': {'method': 'code_interpreter','config':config},
+            'address_node': node_name,
+            'payload': {'method': 'code_interpreter','config':test_config, 'selected_environment':os.environ['REPO_FOLDER']},
             'delay': 1,
         }
         response = sc_main.launch_personal_net(config)['response']

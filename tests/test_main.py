@@ -4,7 +4,6 @@ import unittest
 from swarmautomations.main import MainClass
 from swarmautomations.configs.test_config import config
 
-
 class TestMainClass(unittest.TestCase):
     def setUp(self):
         self.test_delay = 1
@@ -127,11 +126,6 @@ class TestMainClass(unittest.TestCase):
         self.assertIn('files_map', new_config['result'])
         print("Files map sample:", new_config['result']['files_map'][0:5])
 
-    def test_intelligent_web_search(self):
-        new_config = self.main.intelligent_web_search(config)
-        self.assertIn('result', new_config)
-        print(new_config['result'])
-
     def test_google_search(self):
         gs_config = self.main.google_search(config.copy())
         self.assertIn('result', gs_config)
@@ -212,6 +206,6 @@ class TestMainClass(unittest.TestCase):
         }
         standby_thread = threading.Thread(target=self.main.deploy_project_server, args=(config,), daemon=True)
         standby_thread.start()
-        time.sleep(5)
+        time.sleep(500)
 
 

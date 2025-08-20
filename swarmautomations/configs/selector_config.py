@@ -9,14 +9,13 @@ menu = {
     '6': 'sources_parser_and_summarizer',
     '7': 'podcast_generation',
     '8': 'code_interpreter',
-    '9': 'intelligent_web_search',
-    '10': 'google_search',
-    '11': 'browse_url',
-    '12': 'local_file_operations_tools',
-    '13': 'get_files_map',
-    '14': 'vector_database',
-    '15': 'extract_info',
-    '16': 'deploy_project_server',
+    '9': 'google_search',
+    '10': 'browse_url',
+    '11': 'local_file_operations_tools',
+    '12': 'get_files_map',
+    '13': 'vector_database',
+    '14': 'extract_info',
+    '15': 'deploy_project_server',
 }
 
 print("Aplicaciones disponibles:")
@@ -121,6 +120,7 @@ elif app_name == 'extract_info':
 
 elif app_name == 'deploy_project_server':
     config['launch_master'] = input('Launch master? (y/n): ') == 'y'
+
     pass
 
 else:
