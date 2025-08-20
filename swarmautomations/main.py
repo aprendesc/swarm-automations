@@ -151,6 +151,7 @@ class MainClass():
         file_path = config['file_path']
         mode = config['mode']
         file_content = config.get('content', None)
+        content_to_replace = config.get('content_to_replace', None)
         ################################################################################################################
         if mode == 'read_file':
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -160,6 +161,18 @@ class MainClass():
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(file_content)
             config['result'] = {'tool_answer': 'Content successfully written to file.'}
+        elif mode == 'replace':
+            with open(file_path, 'r', encoding='utf-8') as f:
+                contenido = f.read()
+            if content_to_replace is None:
+                config['result'] = {'tool_answer': 'No content_to_replace provided.'}
+            elif contenido.find(content_to_replace) == -1:
+                config['result'] = {'tool_answer': 'Content to replace not found in file.'}
+            else:
+                nuevo_contenido = contenido.replace(content_to_replace, file_content)
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(nuevo_contenido)
+                config['result'] = {'tool_answer': 'Content successfully replaced in file.'}
         return config
 
     def get_files_map(self, config):

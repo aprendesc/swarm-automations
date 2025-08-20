@@ -49,6 +49,7 @@ local_file_operations_config = {
         'mode': 'read_file',
         'file_path': './swarmautomations/main.py',
         'content': 'no_content',
+        'content_to_replace': None,
     }
 
 get_files_map_config = {

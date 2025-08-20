@@ -21,7 +21,7 @@ ps.coverage()
 import os
 from swarmautomations.main import MainClass as SAMainClass
 config = {
-    'launch_master': True,
+    'launch_master': False,
     'node_name': os.environ['MODULE_NAME'],
     'node_delay': 1
 }
