@@ -392,3 +392,14 @@ class MainClass():
             print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
         while True:
             time.sleep(10)
+
+    def project_dev_server(self, config):
+        import os
+        from swarmautomations.main import MainClass as SAMainClass
+        config = {
+            'launch_master': False,
+            'node_name': os.environ['MODULE_NAME'],
+            'node_delay': 1
+        }
+        sa_main = SAMainClass(config)
+        sa_main.deploy_project_server(config)
