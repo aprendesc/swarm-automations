@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 import keyboard
+import tempfile
+import subprocess
 from eigenlib.audio.audio_mixer_recorder import AudioMixerRecorder
 from eigenlib.audio.oai_whisper_stt import OAIWhisperSTTClass
 from eigenlib.utils.notion_utils import NotionUtilsClass
@@ -8,6 +10,35 @@ from eigenlib.utils.notion_utils import NotionUtilsClass
 class CallRecordingPipelineClass:
     def __init__(self):
         pass
+
+    # ---------------------------------------------------------------------
+    # Helper: compress audio (high quality → 16k bitrate MP3)
+    # ---------------------------------------------------------------------
+    def _compress_audio(self, input_path: str) -> str:
+        """Compress `input_path` to a temporary MP3 (high settings) and return its path."""
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+        tmp_file.close()
+        tmp_path = tmp_file.name
+
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", input_path,
+            "-c:a", "libmp3lame",
+            "-b:a", "16k",
+            "-ac", "1",
+            "-ar", "11025",
+            "-map_metadata", "-1",
+            "-f", "mp3",
+            tmp_path,
+        ]
+
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+        except subprocess.CalledProcessError as e:
+            print("⚠️  Error al comprimir el audio, se enviará el original:", e)
+            return input_path
+
+        return tmp_path
 
     def run(self):
         # Instancias de grabación, STT y Notion
@@ -38,23 +69,28 @@ class CallRecordingPipelineClass:
                 mixer.stop()
                 print("Grabación detenida. Procesando audio...\n")
 
-                # 1) Transcribir con Whisper
+                # ---------------------------------------------------------
+                # 1) Comprimir antes de transcribir
+                # ---------------------------------------------------------
+                audio_a_transcribir = self._compress_audio(output_path)
+
+                # 2) Transcribir con Whisper
                 try:
-                    transcription = whisper_model.run(output_path, engine='cloud')
+                    transcription = whisper_model.run(audio_a_transcribir, engine='cloud')
                     print("Transcripción obtenida:")
                     print(transcription, "\n")
                 except Exception as e:
                     print("⚠️ Error al transcribir el audio:", e)
                     continue  # saltamos la parte de Notion y volvemos a esperar el siguiente Ctrl+Alt+R
 
-                # 2) Leer contenido previo de la página de Notion
+                # 3) Leer contenido previo de la página de Notion
                 try:
                     contenido_actual = NU.read(page_id=page_id)
                 except Exception as e:
                     print("⚠️ Error al leer página de Notion:", e)
                     contenido_actual = ""
 
-                # 3) Acumular la transcripción y escribir de nuevo
+                # 4) Acumular la transcripción y escribir de nuevo
                 try:
                     texto_a_escribir = transcription
                     max_longitud = 1500
