@@ -1,12 +1,9 @@
-import os
-
 from eigenlib.utils.project_setup import ProjectSetup
 
 class MainClass():
-    def __init__(self, config):
+    def __init__(self):
         ProjectSetup().init()
 
-    """Automations"""
     def standby(self, config):
         from swarmautomations.modules.standby import StandbyClass
         ################################################################################################################
@@ -22,7 +19,7 @@ class MainClass():
         CallRecordingPipelineClass().run()
         return config
 
-    def listen_smartwatch_notes(self, config):
+    def smartwatch_notes(self, config):
         from eigenlib.audio.oai_whisper_stt import OAIWhisperSTTClass
         from eigenlib.utils.notion_utils import NotionUtilsClass
         import os, time
@@ -331,75 +328,29 @@ class MainClass():
 
     def dev_tools_server(self, config):
         from swarmcompute.main import MainClass as SCMainClass
+        from swarmcompute.configs.base_config import Config
         import time
         ############################################################################################################
-        launch_master = config['launch_master']
         node_name = config['node_name']
-        node_delay = config['node_delay']
-        internal_password = 'internal_pass'
+        delay = config['delay']
+        password = config['password']
         ############################################################################################################
-        # MASTER CONFIGURATION
-        master_config = {
-            # NANO NET
-            'mode': 'master',
-            'master_address': 'tcp://localhost:5005',
-            'password': internal_password,
-            'node_name': None,
-            'node_method': None,
-            'address_node': None,
-            'payload': None,
-            'delay': None,
-        }
-        sc_main = SCMainClass(master_config)
-        if launch_master:
-            sc_main.launch_personal_net(master_config)
-
-        else:
-            # NODE CONFIGURATION
-            def aux(method, config):
-                sel_method = getattr(self, method)
-                return sel_method(config)
-            node_config = {
-                # NANO NET
-                'mode': 'node',
-                'master_address': 'tcp://localhost:5005',
-                'password': internal_password,
-                'node_name': node_name,
-                'node_method': aux,
-                'address_node': None,
-                'payload': None,
-                'delay': node_delay,
-            }
-            sc_main.launch_personal_net(node_config)
-
-            # TEST CONNECTION
-            test_config = {
-                'programming_language': 'python',
-                'code': 'print("Hola mundo!")',
-            }
-            config = {
-                # NANO NET
-                'mode': 'client',
-                'master_address': 'tcp://localhost:5005',
-                'password': internal_password,
-                'node_name': 'client_node',
-                'node_method': aux,
-                'address_node': node_name,
-                'payload': {'method': 'code_interpreter','config':test_config},
-                'delay': 1,
-            }
-            response = sc_main.launch_personal_net(config)['response']
-            print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
+        def aux(method, config):
+            selected_project = config['selected_project']
+            projects_map = {
+                'jedipoc': 'jedi-project-apc',
+                'swarmml': 'swarm-ml',
+                'swarmcompute': 'swarm-compute',
+                'swarmautomations': 'swarm-automations',
+                'swarmintelligence': 'swarm-intelligence',
+                'eigenlib': 'eigenlib'
+                            }
+            ProjectSetup().init(repo_folder=projects_map[selected_project], module_name=selected_project)
+            sel_method = getattr(self, method)
+            return sel_method(config)
+        config['node_method'] = aux
+        SCMainClass().launch_node(Config(wait=True).launch_node(update=config))
+        response = SCMainClass().launch_client(Config(wait=True).launch_client(update=config))['response']
+        print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
         while True:
             time.sleep(10)
-
-    def project_dev_server(self, config):
-        import os
-        from swarmautomations.main import MainClass as SAMainClass
-        config = {
-            'launch_master': False,
-            'node_name': os.environ['MODULE_NAME'],
-            'node_delay': 1
-        }
-        sa_main = SAMainClass(config)
-        sa_main.deploy_project_server(config)
