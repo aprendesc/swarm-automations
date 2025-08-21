@@ -10,10 +10,7 @@ ps.init()
 ps.coverage()
 ########################################################################################################################
 
-from eigenlib.utils.auto_cli import AutoCLI
 
-if __name__ == "__main__":
-    AutoCLI().run()
 
 if False:
     #TEMPLATES
