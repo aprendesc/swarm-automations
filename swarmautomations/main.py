@@ -329,7 +329,7 @@ class MainClass():
             config['result'] = {'listener_started': True, 'background': False}
         return config
 
-    def deploy_project_server(self, config):
+    def dev_tools_server(self, config):
         from swarmcompute.main import MainClass as SCMainClass
         import time
         ############################################################################################################

@@ -80,7 +80,7 @@ extract_info_config = {
     'extraction_landing_page_id': '2522a599e985808aa4c9fbba83fe3c67',
 }
 
-deploy_project_server = {
+dev_tools_server_config = {
     'launch_master': True,
     'node_name': 'project_dev_node',
     'node_delay': 1,
@@ -90,5 +90,5 @@ config = standby_config | call_to_notion_config | smartwatch_notes_config | comp
 config = config | youtube_to_notion_config | sources_parser_config | podcast_generation_config
 config = config | podcast_generation_config | code_interpreter_config | local_file_operations_config
 config = config | get_files_map_config | google_web_search_config | vdb_create_config
-config = config | browser_url_config | extract_info_config | deploy_project_server
+config = config | browser_url_config | extract_info_config | dev_tools_server_config
 ########################################################################################################################
