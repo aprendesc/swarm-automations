@@ -1,20 +1,21 @@
-import time
-import math
 import pyautogui as pg
+import time
 
 class StandbyClass:
-    def __init__(self, interval=5, radius=50, steps=64):
-        self.interval, self.radius, self.steps = interval, radius, steps
+    def __init__(self, interval=20):
+        self.interval = interval  # tiempo entre simulaciones en segundos
 
-    def _circle(self, cx, cy, dur=3):
-        for i in range(self.steps):
-            a = 2*math.pi*i/self.steps
-            pg.moveTo(cx + self.radius*math.cos(a), cy + self.radius*math.sin(a), dur/self.steps)
+    def simulate_activity(self):
+        # Mover el mouse 1px a la derecha y volver
+        x, y = pg.position()
+        pg.moveTo(x + 1, y)
+        pg.moveTo(x, y)
+
+        # Presionar y soltar Shift
+        pg.press('shift')
 
     def run(self):
         while True:
-            x0, y0 = pg.position()
+            self.simulate_activity()
+            print("Actividad simulada para Teams y sistema.")
             time.sleep(self.interval)
-            if (x0, y0) == pg.position():
-                print('Standby detected...')
-                self._circle(x0, y0)

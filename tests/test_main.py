@@ -8,11 +8,13 @@ import time
 class TestMainClass(unittest.TestCase):
     def setUp(self):
         self.test_delay = 1
-        self.main = MainClass({})
+        self.main = MainClass()
         self.cfg = Config()
 
     def test_standby(self):
-        standby_thread = threading.Thread(target=self.main.standby, args=(self.cfg.standby(),), daemon=True)
+        cfg = self.cfg.standby()
+        cfg['time_interval'] = 1
+        standby_thread = threading.Thread(target=self.main.standby, args=(cfg,), daemon=True)
         standby_thread.start()
         time.sleep(self.test_delay)
 

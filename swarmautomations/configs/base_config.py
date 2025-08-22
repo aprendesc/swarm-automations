@@ -5,7 +5,7 @@ class Config:
         self.hypothesis = hypothesis
 
     def standby(self, update=None):
-        return {'time_interval': 1} | (update or {})
+        return {'time_interval': 20} | (update or {})
 
     def call_to_notion(self, update=None):
         return {} | (update or {})

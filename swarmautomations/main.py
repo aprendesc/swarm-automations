@@ -9,7 +9,7 @@ class MainClass():
         ################################################################################################################
         time_interval = config['time_interval']
         ################################################################################################################
-        monitor = StandbyClass(interval=time_interval, radius=50, steps=64)
+        monitor = StandbyClass(interval=time_interval)
         monitor.run()
 
     def call_to_notion(self, config):
