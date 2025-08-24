@@ -1,14 +1,14 @@
 import os
 import unittest
-from swarmautomations.main import MainClass
+from swarmautomations.main import Main
 from swarmautomations.configs.base_config import Config
 import threading
 import time
 
-class TestMainClass(unittest.TestCase):
+class TestMain(unittest.TestCase):
     def setUp(self):
         self.test_delay = 1
-        self.main = MainClass()
+        self.main = Main()
         self.cfg = Config()
 
     def test_standby(self):
@@ -163,5 +163,4 @@ class TestMainClass(unittest.TestCase):
         standby_thread = threading.Thread(target=self.main.dev_tools_server, args=(self.cfg.dev_tools_server(config),), daemon=True)
         standby_thread.start()
         time.sleep(100)
-
 

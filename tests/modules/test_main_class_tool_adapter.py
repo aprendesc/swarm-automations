@@ -1,9 +1,9 @@
 import unittest
-from swarmautomations.modules.main_class_tool_adapter import MainClassToolAdapter
+from swarmautomations.modules.main_class_tool_adapter import MainToolAdapter
 
-class TestMainClassToolAdapter(unittest.TestCase):
+class TestMainToolAdapter(unittest.TestCase):
     def setUp(self):
-        from swarmautomations.main import MainClass
+        from swarmautomations.main import Main
         tool_name = 'code_interpreter'
         tool_description = """Code interpreter for expert software development in the environment of the project."""
         tool_args = [
@@ -19,7 +19,7 @@ class TestMainClassToolAdapter(unittest.TestCase):
                 "required": True,
             },
         ]
-        self.ci_tool = MainClassToolAdapter(MainClass({}).code_interpreter, tool_name=tool_name, tool_description=tool_description, tool_args=tool_args)
+        self.ci_tool = MainToolAdapter(Main({}).code_interpreter, tool_name=tool_name, tool_description=tool_description, tool_args=tool_args)
 
     def test_get_tool_dict(self):
         self.ci_tool.get_tool_dict()

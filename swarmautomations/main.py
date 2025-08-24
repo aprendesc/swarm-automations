@@ -1,6 +1,6 @@
 from eigenlib.utils.project_setup import ProjectSetup
 
-class MainClass():
+class Main:
     def __init__(self):
         ProjectSetup().init()
 
@@ -327,7 +327,7 @@ class MainClass():
         return config
 
     def dev_tools_server(self, config):
-        from swarmcompute.main import MainClass as SCMainClass
+        from swarmcompute.main import Main as SCMain
         from swarmcompute.configs.base_config import Config
         import time
         ############################################################################################################
@@ -349,8 +349,8 @@ class MainClass():
             sel_method = getattr(self, method)
             return sel_method(config)
         config['node_method'] = aux
-        SCMainClass().launch_node(Config(wait=True).launch_node(update=config))
-        response = SCMainClass().launch_client(Config(wait=True).launch_client(update=config))['response']
+        SCMain().launch_node(Config(wait=True).launch_node(update=config))
+        response = SCMain().launch_client(Config(wait=True).launch_client(update=config))['response']
         print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
         while True:
             time.sleep(10)

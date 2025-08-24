@@ -1,6 +1,6 @@
 import json
 
-class MainClassToolAdapter:
+class MainToolAdapter:
     def __init__(self, method, default_config, tool_name, tool_description, tool_args):
         self.method = method
         self.tool_name = tool_name

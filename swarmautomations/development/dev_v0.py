@@ -1,32 +1,13 @@
-import sys, os
+import unittest
 from eigenlib.utils.project_setup import ProjectSetup
-########################################################################################################################
-os.environ['BASE_PATH'] = f'C:/Users/{os.environ["USERNAME"]}/Desktop/proyectos'
-os.environ['REPO_FOLDER'] = 'swarm-automations'
-os.environ['MODULE_NAME'] = 'swarmautomations'
-########################################################################################################################
-ps = ProjectSetup()
-ps.init()
-ps.coverage()
-########################################################################################################################
+from swarmautomations.main import Main
+from swarmautomations.configs.base_config import Config
 
+class TestDev(unittest.TestCase):
+    def setUp(self):
+        ProjectSetup().coverage()
+        self.main = Main()
+        self.cfg = Config()
 
-
-if False:
-    #TEMPLATES
-    class MyClass:
-        def __init__(self):
-            pass
-
-        def run(self):
-            print('Hola Mundo!')
-
-    import unittest
-    class TestMyClass(unittest.TestCase):
-        def SetUp(self):
-            pass
-
-        def test_run(self):
-            mc = MyClass()
-            mc.run()
-
+    def test_under_development(self):
+        print('Development  test')

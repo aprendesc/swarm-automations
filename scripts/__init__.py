@@ -12,9 +12,9 @@ env["PYTHONPATH"] = f"{project_dir};{eigenlib_dir}"
 
 # Python code en UNA línea, sin saltos de línea ni comillas internas
 python_code = (
-    "from swarmautomations.main import MainClass; "
+    "from swarmautomations.main import Main; "
     "from swarmautomations.config import active_config as config; "
-    "main=MainClass(config); main.standby(config)"
+    "main=Main(config); main.standby(config)"
 )
 
 # Escapando las comillas dobles para pasar por cmd y luego por python
