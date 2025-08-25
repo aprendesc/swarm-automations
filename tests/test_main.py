@@ -44,10 +44,9 @@ class TestMain(unittest.TestCase):
         self.assertTrue(len(str(new_config['result'])) > 0)
 
     def test_podcast_generation(self):
-        if False:
-            standby_thread = threading.Thread(target=self.main.podcast_generation, args=(self.cfg.podcast_generation(),), daemon=True)
-            standby_thread.start()
-            time.sleep(self.test_delay)
+        standby_thread = threading.Thread(target=self.main.podcast_generation, args=(self.cfg.podcast_generation(),), daemon=True)
+        standby_thread.start()
+        time.sleep(10)
 
     def test_code_interpreter(self):
         config = self.main.code_interpreter(self.cfg.code_interpreter())

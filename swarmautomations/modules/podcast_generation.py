@@ -1,7 +1,7 @@
-from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips
+from moviepy import ImageClip, AudioFileClip, concatenate_videoclips
 from eigenlib.LLM.sources_parser import SourcesParserClass
 from eigenlib.LLM.episode import EpisodeClass
-from eigenlib.LLM.oai_llm import OAILLMClientClass
+from eigenlib.LLM.llm_client import LLMClientClass
 from eigenlib.audio.oai_tts import OAITTSModelClass
 from eigenlib.image.dalle_model import DalleModelClass
 import os
@@ -16,11 +16,12 @@ class PodcastGeneration:
 
     def run(self, max_iter, podcast_path):
         SP = SourcesParserClass()
-        path = 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-intelligence-project/data/raw/source_papers'
+        path = 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-automations/data/raw/source_papers'
         ########################################################################################################################
         files = os.listdir(path)
         print(pd.Series(files))
         selection = int(input('Seleccione el paper a generar: '))
+        max_iter = int(input('Introduce max iter: '))
         input_file = os.path.join(path, files[selection])
         path = input_file
         name = input_file.replace('.pdf', '').split('\\')[-1]
@@ -47,17 +48,15 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
 
             episode.log(channel='system', modality='text', content=f'Haz la pregunta número {str(i)}', agent_id='Q')
             episode.log(channel='user', modality='text', content=A_message, agent_id='Q')
-            Q_message = OAILLMClientClass(model='gpt-4.1', temperature=1).run(episode, agent_id='Q')
+            Q_message = LLMClientClass(model='gpt-4.1', temperature=1).run(episode, agent_id='Q')
             episode.log(channel='assistant', modality='text', content=Q_message, agent_id='Q')
 
-            OAITTSModelClass(voice='echo').run(Q_message.encode('utf-8').decode('utf-8'),
-                                               podcast_path + f'/turno_{str(i)}_int.mp3')
+            OAITTSModelClass(voice='echo').run(Q_message.encode('utf-8').decode('utf-8'), podcast_path + f'/turno_{str(i)}_int.mp3')
 
             episode.log(channel='user', modality='text', content=Q_message, agent_id='A')
-            A_message = OAILLMClientClass(model='gpt-4.1', temperature=1).run(episode, agent_id='A')
+            A_message = LLMClientClass(model='gpt-4.1', temperature=1).run(episode, agent_id='A')
             episode.log(channel='assistant', modality='text', content=A_message, agent_id='A')
-            OAITTSModelClass(voice='nova').run(A_message.encode('utf-8').decode('utf-8'),
-                                               podcast_path + f'/turno_{str(i)}_guest.mp3')
+            OAITTSModelClass(voice='nova').run(A_message.encode('utf-8').decode('utf-8'), podcast_path + f'/turno_{str(i)}_guest.mp3')
 
             if i > 0:
                 elapsed_time = time.time() - start_time
@@ -67,7 +66,7 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
 
                 img_input_prompt = """f'Genera un prompt para generar una imagen a partir del mensaje del usuario. Responde unicamente con las keywords en inglés para generar una imagen visualmente impactante y relacionadas con el texto.'"""
                 episode.log(channel='user', modality='text', content=img_input_prompt, agent_id='A')
-                img_prompt = OAILLMClientClass(model='gpt-4.1', temperature=1).run(episode, agent_id='A')
+                img_prompt = LLMClientClass(model='gpt-4.1', temperature=1).run(episode, agent_id='A')
                 image = DalleModelClass().predict(img_prompt)
                 image.convert('RGB').save(podcast_path + '/' + f'image_{str(i)}.jpeg', format='JPEG')
                 time.sleep(30)
@@ -99,6 +98,7 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
         # VIDEO GENERATION
         audio = AudioFileClip(podcast_path + '/final_audio.wav')
         spec = []
+        max_iter = 3
         delta = audio.duration / (max_iter - 2)
         for i in range(2, max_iter):
             spec.append((podcast_path + f'/image_{str(i)}.jpeg', delta * (i - 2), delta * (i + 1 - 2)))
@@ -109,14 +109,14 @@ Eres Signal una experta que esta realizando un podcast y tu objetivo es ir mante
         clips = []
         for ruta, t0, t1 in spec:
             dur = t1 - t0
-            clip = ImageClip(ruta).set_duration(dur)
+            clip = ImageClip(ruta, duration=dur)
             clips.append(clip)
 
-        video = concatenate_videoclips(clips, method="compose")
+        video = concatenate_videoclips(clips, method="chain")
         if video.duration > audio.duration:
-            video = video.subclip(0, audio.duration)
+            video = video.subclipped(0, audio.duration)  # Use subclipped() instead
         else:
-            video = video.set_duration(audio.duration)
+            video = video.with_duration(audio.duration)  # Use with_duration() instead
 
-        video = video.set_audio(audio)
+        video = video.with_audio(audio)
         video.write_videofile(output_path, fps=fps, codec="libx264", audio_codec="aac")

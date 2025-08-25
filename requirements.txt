@@ -42,3 +42,4 @@ tabulate
 tensorflow
 lightgbm
 asciichartpy
+moviepy
