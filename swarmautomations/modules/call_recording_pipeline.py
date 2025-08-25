@@ -14,32 +14,6 @@ class CallRecordingPipelineClass:
     # ---------------------------------------------------------------------
     # Helper: compress audio (high quality → 16k bitrate MP3)
     # ---------------------------------------------------------------------
-    def _compress_audio(self, input_path: str) -> str:
-        """Compress `input_path` to a temporary MP3 (high settings) and return its path."""
-        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-        tmp_file.close()
-        tmp_path = tmp_file.name
-
-        cmd = [
-            "ffmpeg", "-y",
-            "-i", input_path,
-            "-c:a", "libmp3lame",
-            "-b:a", "16k",
-            "-ac", "1",
-            "-ar", "11025",
-            "-map_metadata", "-1",
-            "-f", "mp3",
-            tmp_path,
-        ]
-
-        try:
-            subprocess.run(cmd, check=True, capture_output=True)
-        except subprocess.CalledProcessError as e:
-            print("⚠️  Error al comprimir el audio, se enviará el original:", e)
-            return input_path
-
-        return tmp_path
-
     def run(self):
         # Instancias de grabación, STT y Notion
         mixer = AudioMixerRecorder()
@@ -53,7 +27,7 @@ class CallRecordingPipelineClass:
         print("  Ctrl+Alt+R → Iniciar grabación")
         print("        Esc   → Detener, transcribir y subir a Notion")
         print("  Ctrl+C o cierre de ventana → Salir")
-        print("============================================\n")
+        print("============================================/n")
 
         try:
             while True:
@@ -67,18 +41,16 @@ class CallRecordingPipelineClass:
                 # Esperamos a que el usuario presione ESC
                 keyboard.wait("esc")
                 mixer.stop()
-                print("Grabación detenida. Procesando audio...\n")
+                print("Grabación detenida. Procesando audio.../n")
 
                 # ---------------------------------------------------------
                 # 1) Comprimir antes de transcribir
                 # ---------------------------------------------------------
-                audio_a_transcribir = self._compress_audio(output_path)
-
                 # 2) Transcribir con Whisper
                 try:
-                    transcription = whisper_model.run(audio_a_transcribir, engine='cloud')
+                    transcription = whisper_model.run(output_path, engine='cloud')
                     print("Transcripción obtenida:")
-                    print(transcription, "\n")
+                    print(transcription, "/n")
                 except Exception as e:
                     print("⚠️ Error al transcribir el audio:", e)
                     continue  # saltamos la parte de Notion y volvemos a esperar el siguiente Ctrl+Alt+R
@@ -113,14 +85,14 @@ class CallRecordingPipelineClass:
 
                     for i, bloque in enumerate(bloques):
                         NU.write(page_id=page_id, texto=bloque)
-                    print("✅ Transcripción subida y acumulada en Notion.\n")
+                    print("✅ Transcripción subida y acumulada en Notion./n")
                 except Exception as e:
                     print("⚠️ Error al escribir en Notion:", e)
 
-                print("Vuelve a pulsar Ctrl+Alt+R para otra grabación.\n")
+                print("Vuelve a pulsar Ctrl+Alt+R para otra grabación./n")
 
         except KeyboardInterrupt:
-            print("\nSaliendo...")
+            print("/nSaliendo...")
             if mixer.is_recording:
                 mixer.stop()
 
@@ -146,5 +118,5 @@ class CallRecordingPipelineClass:
         # Aseguramos que la carpeta existe
         os.makedirs(base_path, exist_ok=True)
 
-        nombre = f"{dia_sem}_{dia_num}_{mes}_{ano}_{hora:02d}_{minuto:02d}.flac"
+        nombre = f"{dia_sem}_{dia_num}_{mes}_{ano}_{hora:02d}_{minuto:02d}.mp3"
         return os.path.join(base_path, nombre)
