@@ -1,8 +1,11 @@
-
-from swarmautomations.main import Main
-from swarmautomations.configs.base_config import Config
+from eigenlib.utils.cli import CLI
+import os
+os.environ['PACKAGE_NAME'] = 'swarmautomations'
 
 if __name__ == "__main__":
-    import os
-    os.environ['REPO_FOLDER'] = 'swarm-automations'
-    Main().podcast_generation(Config().podcast_generation())
+    cli = CLI()
+    cli.run()
+
+
+
+

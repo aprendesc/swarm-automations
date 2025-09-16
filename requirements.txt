@@ -43,3 +43,6 @@ tensorflow
 lightgbm
 asciichartpy
 moviepy
+orjson
+hypy
+tables

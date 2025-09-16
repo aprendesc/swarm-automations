@@ -48,7 +48,7 @@ class CallRecordingPipelineClass:
                 # ---------------------------------------------------------
                 # 2) Transcribir con Whisper
                 try:
-                    transcription = whisper_model.run(output_path, engine='cloud')
+                    transcription = whisper_model.run(output_path.replace('.flac','.mp3'), engine='cloud')
                     print("Transcripción obtenida:")
                     print(transcription, "/n")
                 except Exception as e:
@@ -118,5 +118,5 @@ class CallRecordingPipelineClass:
         # Aseguramos que la carpeta existe
         os.makedirs(base_path, exist_ok=True)
 
-        nombre = f"{dia_sem}_{dia_num}_{mes}_{ano}_{hora:02d}_{minuto:02d}.mp3"
+        nombre = f"{dia_sem}_{dia_num}_{mes}_{ano}_{hora:02d}_{minuto:02d}.flac"
         return os.path.join(base_path, nombre)

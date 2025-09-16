@@ -1,8 +1,8 @@
-from eigenlib.utils.project_setup import ProjectSetup
+from eigenlib.utils.setup import Setup
 
 class Main:
     def __init__(self):
-        ProjectSetup().init()
+        Setup().init()
 
     def standby(self, config):
         from swarmautomations.modules.standby import StandbyClass
@@ -13,22 +13,30 @@ class Main:
         monitor.run()
 
     def call_to_notion(self, config):
-        from swarmautomations.modules.call_recording_pipeline import CallRecordingPipelineClass
+        from swarmautomations.modules.transcriptor import Transcriptor
         ################################################################################################################
         ################################################################################################################
-        CallRecordingPipelineClass().run()
+        app = Transcriptor(
+            output_dir="./data/processed/audios",
+            block_duration=120,
+            sample_rate=48000,
+            compression="medium",
+            to_notion=True,
+            notion_page_id="23d2a599e98580d6b20dc30f999a1a2c"
+        )
+        app.run()
         return config
 
     def smartwatch_notes(self, config):
         from eigenlib.audio.oai_whisper_stt import OAIWhisperSTTClass
-        from eigenlib.utils.notion_utils import NotionUtilsClass
+        from eigenlib.utils.notion_io import NotionIO
         import os, time
         ################################################################################################################
         audio_path = config['audio_path']
         notion_page = config['sw_notion_page']
         ################################################################################################################
         whisper_model = OAIWhisperSTTClass()
-        NU = NotionUtilsClass()
+        NM = NotionIO()
         print(f"📡 Monitoreando carpeta: {audio_path}")
         processed_files = set()
         while True:
@@ -40,7 +48,7 @@ class Main:
                     if os.path.isfile(file_path):
                         print(f"🎙️  Nuevo archivo detectado: {f}")
                         transcription = whisper_model.run(file_path, engine='cloud')
-                        NU.write(page_id=notion_page, texto='* ' + transcription)
+                        NM.write_text(page_id=notion_page, text='* ' + transcription)
                         os.remove(file_path)
                         print(f"✅ Procesado y eliminado: {f}")
                         time.sleep(2)
@@ -62,9 +70,9 @@ class Main:
 
     def youtube_to_notion(self, config):
         import tempfile
-        from eigenlib.utils.youtube_utils import YoutubeUtilsClass
+        from swarmautomations.modules.youtube_utils import YoutubeUtilsClass
         from eigenlib.audio.oai_whisper_stt import OAIWhisperSTTClass
-        from eigenlib.utils.notion_utils import NotionUtilsClass
+        from eigenlib.utils.notion_io import NotionIO
         from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         ################################################################################################################
         video_url = config['yttn_video_url']
@@ -79,12 +87,12 @@ class Main:
             transcription = whisper_model.run(result_path, engine='cloud')
         if summarize:
             transcription = SourceSummarizationClass().run(transcription, n_sections=int(n_sections))
-        NotionUtilsClass().write(page_id=notion_page, texto='* ' + transcription)
+        NotionIO().write_text(page_id=notion_page, text='* ' + transcription)
         return config
 
     def sources_parser_and_summarizer(self, config):
         from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
-        from eigenlib.utils.notion_utils import NotionUtilsClass
+        from eigenlib.utils.notion_io import NotionIO
         from eigenlib.LLM.sources_parser import SourcesParserClass
         ################################################################################################################
         source_path_or_url = config['source_path_or_url']
@@ -104,7 +112,7 @@ class Main:
             content = SourceSummarizationClass().run(source_path_or_url, n_sections=n_sections)
             result_dict['content'] = content
         if to_notion:
-            NotionUtilsClass().write(page_id=notion_page, texto='> ' + content)
+            NotionIO().write_text(page_id=notion_page, text='> ' + content)
             result_dict['succesfully_sent_to_notion'] = True
         config['result'] = result_dict
         return config
@@ -192,17 +200,19 @@ class Main:
         config['result'] = {'files_map': map}
         return config
 
-    def google_search(self, config):
-        from googlesearch import search
+    def web_search(self, config):
+        from ddgs import DDGS
         ################################################################################################################
         query = config['query']
         num_results = config['num_results']
         ################################################################################################################
-        config['result'] = {'urls': list(search(query, num_results=num_results))}
+        with DDGS() as ddgs:
+            results = ddgs.text(query, max_results=num_results, region="wt-wt")
+        config['result'] = results
         return config
 
     def browse_url(self, config):
-        from eigenlib.utils.parallel_utils import ParallelUtilsClass
+        from eigenlib.utils.parallel_io import ParallelIO
         from eigenlib.LLM.sources_parser import SourcesParserClass
         ################################################################################################################
         urls = config['urls']
@@ -210,14 +220,14 @@ class Main:
         if isinstance(urls, str):
             urls = [urls]
         sp = SourcesParserClass()
-        result = ParallelUtilsClass().run_in_parallel(sp.run, {}, {'file_path': urls}, n_threads=len(urls), use_processes=False)
+        result = ParallelIO().run_in_parallel(sp.run, {}, {'file_path': urls}, max_workers=len(urls), use_processes=False)
         config['result'] = {'summary': '\n'.join(result)}
         return config
 
     def vector_database(self, config):
         from eigenlib.LLM.vector_database import VectorDatabaseClass
         from eigenlib.LLM.sources_parser import SourcesParserClass
-        from eigenlib.utils.data_utils import DataUtilsClass
+        from eigenlib.utils.data_io import DataIO
         import os
         import copy
         ############################################################################################################
@@ -243,7 +253,7 @@ class Main:
             self.VDB = VectorDatabaseClass(content_feature='steering')
             self.VDB.initialize()
             source_df = self.VDB.create(df['content'].sum(), separator='.', create_vectors=True, chunking_threshold=vdb_chunking_threshold)
-            DataUtilsClass().save_dataset(source_df, path=os.environ['CURATED_DATA_PATH'], dataset_name=VDB_name, format='pkl', cloud=False)
+            DataIO().write(path=os.path.join(os.environ['PROCESSED_DATA_PATH'], VDB_name + '.pkl'), data=source_df)
         elif mode == 'retrieval':
             if not hasattr(self, "VDB"):
                 VDB_name = config['vdb_name']
@@ -264,11 +274,11 @@ class Main:
         import time
         from pynput import keyboard as kb
         import pyperclip
-        from eigenlib.utils.notion_utils import NotionUtilsClass
+        from eigenlib.utils.notion_io import NotionIO
         ############################################################################################################
         page_id = config.get('extraction_landing_page_id')
         run_in_background = bool(config.get('run_in_background', False))
-        NU = NotionUtilsClass()
+        NU = NotionIO()
         CTRL_KEYS = {kb.Key.ctrl, kb.Key.ctrl_l, kb.Key.ctrl_r}
         ANGLE_KEY_CHAR = '<'
         ANGLE_KEY_VK = 226  # VK_OEM_102 en Windows
@@ -302,7 +312,7 @@ class Main:
                     texto = _copy_selected()
                     if texto:
                         try:
-                            NU.write(page_id=page_id, texto=texto)
+                            NU.write_text(page_id=page_id, text=texto)
                             print(f"✅ Enviado a Notion ({len(texto)} car.).")
                         except Exception as e:
                             print(f"❌ Error al enviar a Notion: {e}")
@@ -326,31 +336,70 @@ class Main:
             config['result'] = {'listener_started': True, 'background': False}
         return config
 
-    def dev_tools_server(self, config):
-        from swarmcompute.main import Main as SCMain
-        from swarmcompute.configs.base_config import Config
+    def serving(self, config):
+        from eigenlib.utils.network_io import NetworkIO
         import time
-        ############################################################################################################
+        ################################################################################################################
+        def serving_method(method, config):
+            return getattr(self, method)(config)
+        MASTER_ADDRESS = config['master_address']
         node_name = config['node_name']
         delay = config['delay']
         password = config['password']
-        ############################################################################################################
-        def aux(method, config):
-            selected_project = config['selected_project']
-            projects_map = {
-                'jedipoc': 'jedi-project-apc',
-                'swarmml': 'swarm-ml',
-                'swarmcompute': 'swarm-compute',
-                'swarmautomations': 'swarm-automations',
-                'swarmintelligence': 'swarm-intelligence',
-                'eigenlib': 'eigenlib'
-                            }
-            ProjectSetup().init(repo_folder=projects_map[selected_project], module_name=selected_project)
-            sel_method = getattr(self, method)
-            return sel_method(config)
-        config['node_method'] = aux
-        SCMain().launch_node(Config(wait=True).launch_node(update=config))
-        response = SCMain().launch_client(Config(wait=True).launch_client(update=config))['response']
-        print('CONNECTION CHECKED: ', response, 'THE SERVER AND NODE IS NOW ACTIVE!')
+        NetworkIO().launch_master(address=MASTER_ADDRESS, password=password)
+        ################################################################################################################
+        NetworkIO(verbose=True).launch_node(node_name=node_name, master_address=MASTER_ADDRESS, node_method=serving_method, password=password, delay=delay)
         while True:
             time.sleep(10)
+        return config
+
+    def call(self, config):
+        from eigenlib.utils.network_io import NetworkIO
+        ################################################################################################################
+        MASTER_ADDRESS = config['master_address']
+        client_name = config['client_name']
+        delay = config['delay']
+        password = config['password']
+        target_node = config['target_node']
+        payload = config['payload']
+        ################################################################################################################
+        client = NetworkIO()
+        client.launch_node(node_name=client_name, master_address=MASTER_ADDRESS, node_method=lambda: "OK", delay=delay, password=password)
+        resultado = client.call(target_node=target_node, payload=payload)
+        client.stop()
+        config['result'] = resultado
+        print(resultado)
+        return config
+
+
+if __name__ == "__main__":
+    import os
+    from swarmautomations.configs.base_config import Config
+    os.environ['REPO_FOLDER'] = 'swarm-automations'
+    main = Main()
+    config = Config()
+    #main.standby(config.standby())
+    #main.call_to_notion(config.call_to_notion())
+    #main.smartwatch_notes(config.smartwatch_notes())
+    #main.computer_use_automation(config.computer_use_automations())
+    #main.youtube_to_notion(config.youtube_to_notion())
+    #main.sources_parser_and_summarizer(config.sources_parser_and_summarizer())
+    #main.podcast_generation(config.podcast_generation())
+    #main.code_interpreter(config.code_interpreter())
+    #main.local_file_operations_tools(config.local_file_operations_tools())
+    #main.get_files_map(config.get_files_map())
+    #output_cfg = main.web_search(config.web_search())
+    #main.vector_database(config.vector_database())
+    #main.browse_url(config.browse_url())
+    #main.extract_info(config.extract_info())
+    #main.dev_tools_server(config.dev_tools_server())
+    main.serving(config.serving())
+    #main.call(config.call())
+    #print(output_cfg)
+
+
+
+
+
+
+

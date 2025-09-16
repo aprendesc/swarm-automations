@@ -17,7 +17,7 @@ class Config:
         }
         return config | (update or {})
 
-    def computer_use(self, update=None):
+    def computer_use_automations(self, update=None):
         config = {
             'instructions': 'This is a test, make a random movement of the mouse, and then say OBJECTIVE ACCOMPLISHED to finish.',
             'model': 'computer-use-preview',
@@ -59,7 +59,7 @@ class Config:
         }
         return config | (update or {})
 
-    def local_file_operations(self, update=None):
+    def local_file_operations_tools(self, update=None):
         config = {
             'mode': 'read_file',
             'file_path': './swarmautomations/main.py',
@@ -72,7 +72,7 @@ class Config:
         config = {'map_root_dir': './'}
         return config | (update or {})
 
-    def google_web_search(self, update=None):
+    def web_search(self, update=None):
         config = {
             'query': 'F22 Raptor',
             'num_results': 2
@@ -82,10 +82,10 @@ class Config:
     def vector_database(self, update=None):
         config = {
             'vdb_mode': 'fit',
-            'raw_sources': [],
+            'raw_sources': ['https://es.wikipedia.org/wiki/Lockheed_Martin_F-22_Raptor'],
             'seeds_chunking_threshold': 900,
             'vdb_name': 'test_VDB',
-            'vdb_chunking_threshold': 150,
+            'vdb_chunking_threshold': 900,
             'vdb_query': 'Capital de Francia',
             'lang': 'eng',
             'vdb_wd': 'C:/Users/AlejandroPrendesCabo/Desktop/proyectos/swarm-automations',
@@ -107,5 +107,29 @@ class Config:
             'node_name': 'project_dev_node',
             'delay': 1,
             'password': 'internal_pass',
+            'wait': False
         }
         return config | (update or {})
+
+    def serving(self, update=None):
+        import os
+        config = {
+            'master_address': "localhost:5001",
+            'node_name': os.environ['PACKAGE_NAME'] + '_node',
+            'password': 'test_pass',
+            'delay': 1,
+        }
+        return config | (update or {})
+
+    def call(self, update=None):
+        import os
+        config = {
+            'master_address': "localhost:5001",
+            'client_name': os.environ['PACKAGE_NAME'] + '_client',
+            'password': 'test_pass',
+            'delay': 1,
+            'target_node': self.serving()['node_name'],
+            'payload': {"method": "standby", "config": self.standby()},
+        }
+        return config | (update or {})
+

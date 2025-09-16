@@ -21,7 +21,7 @@ class TestMain(unittest.TestCase):
     def test_call_to_notion(self):
         standby_thread = threading.Thread(target=self.main.call_to_notion, args=(self.cfg.call_to_notion(),), daemon=True)
         standby_thread.start()
-        time.sleep(self.test_delay)
+        time.sleep(50)
 
     def test_computer_use_automation(self):
         standby_thread = threading.Thread(target=self.main.computer_use_automation, args=(self.cfg.computer_use(),), daemon=True)
