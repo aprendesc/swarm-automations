@@ -17,7 +17,21 @@ class Config:
         }
         return config | (update or {})
 
-    def computer_use_automations(self, update=None):
+
+    def real_time_transcriptor(self, update=None):
+        """Parámetros por defecto para el método `real_time_transcriptor` de Main.
+
+        Ajustes mínimos para que el usuario pueda sobreescribirlos al llamar al
+        método.  Todos los valores se mezclan con *update* (si se proporciona).
+        """
+        config = {
+            'segment_duration': 10,   # segundos entre transcripciones
+            'model_name': 'whisper-1',
+            'language': 'es',         # idioma principal de la transcripción
+            'sample_rate': 48000,
+        }
+        return config | (update or {})
+
         config = {
             'instructions': 'This is a test, make a random movement of the mouse, and then say OBJECTIVE ACCOMPLISHED to finish.',
             'model': 'computer-use-preview',

@@ -4,6 +4,24 @@ class Main:
     def __init__(self):
         Setup().init()
 
+    def real_time_transcriptor(self, config):
+        """Inicia el transcriptor en tiempo real.
+
+        Se basa en el módulo `RealTimeTranscriptor` y simplemente pasa los
+        parámetros de configuración recibidos.  Bloquea el hilo principal hasta
+        que el usuario finalice la aplicación (Ctrl+C en la consola)."""
+        from swarmautomations.modules.real_time_transcriptor import RealTimeTranscriptor
+
+        segment_duration = config.get('segment_duration', 10)
+        model_name = config.get('model_name', 'whisper-1')
+        language = config.get('language', 'es')
+        sample_rate = config.get('sample_rate', 48000)
+
+        rt = RealTimeTranscriptor(
+            sample_rate=sample_rate,
+        )
+        rt.wait()
+
     def standby(self, config):
         from swarmautomations.modules.standby import StandbyClass
         ################################################################################################################
@@ -379,6 +397,7 @@ if __name__ == "__main__":
     main = Main()
     config = Config()
     #main.standby(config.standby())
+    main.real_time_transcriptor(config.real_time_transcriptor())
     #main.call_to_notion(config.call_to_notion())
     #main.smartwatch_notes(config.smartwatch_notes())
     #main.computer_use_automation(config.computer_use_automations())
@@ -393,7 +412,7 @@ if __name__ == "__main__":
     #main.browse_url(config.browse_url())
     #main.extract_info(config.extract_info())
     #main.dev_tools_server(config.dev_tools_server())
-    main.serving(config.serving())
+    #main.serving(config.serving())
     #main.call(config.call())
     #print(output_cfg)
 
