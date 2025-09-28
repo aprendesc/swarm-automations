@@ -5,21 +5,9 @@ class Main:
         Setup().init()
 
     def real_time_transcriptor(self, config):
-        """Inicia el transcriptor en tiempo real.
-
-        Se basa en el módulo `RealTimeTranscriptor` y simplemente pasa los
-        parámetros de configuración recibidos.  Bloquea el hilo principal hasta
-        que el usuario finalice la aplicación (Ctrl+C en la consola)."""
         from swarmautomations.modules.real_time_transcriptor import RealTimeTranscriptor
-
-        segment_duration = config.get('segment_duration', 10)
-        model_name = config.get('model_name', 'whisper-1')
-        language = config.get('language', 'es')
         sample_rate = config.get('sample_rate', 48000)
-
-        rt = RealTimeTranscriptor(
-            sample_rate=sample_rate,
-        )
+        rt = RealTimeTranscriptor(sample_rate=sample_rate)
         rt.wait()
 
     def standby(self, config):
@@ -77,7 +65,7 @@ class Main:
                 time.sleep(5)
 
     def computer_use_automation(self, config):
-        from eigenlib.LLM.computer_use_tools import ComputerUseClass
+        from eigenlib.genai.tools.computer_use_tools import ComputerUseClass
         ################################################################################################################
         continue_action = config['continue_action']
         instructions = config['instructions']
@@ -111,7 +99,7 @@ class Main:
     def sources_parser_and_summarizer(self, config):
         from swarmautomations.modules.automatic_summarizer import SourceSummarizationClass
         from eigenlib.utils.notion_io import NotionIO
-        from eigenlib.LLM.sources_parser import SourcesParserClass
+        from eigenlib.genai.sources_parser import SourcesParserClass
         ################################################################################################################
         source_path_or_url = config['source_path_or_url']
         notion_page = config['summarizer_notion_page']
@@ -196,50 +184,6 @@ class Main:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(nuevo_contenido)
                 config['result'] = {'tool_answer': 'Content successfully replaced in file.'}
-        return config
-
-    def get_files_map(self, config):
-        import os
-        ################################################################################################################
-        map_root_dir = config['map_root_dir']
-        ################################################################################################################
-        def project_map(root_dir, excluded='auto'):
-            if excluded == 'auto':
-                excluded = ['__', '.venv', 'git', '.env', '.pytest', '.idea']
-            map = []
-            for root, _, files in os.walk(root_dir):
-                for name in files:
-                    file_path = os.path.join(root, name)
-                    if any(sub in file_path for sub in excluded):
-                        continue
-                    map.append(file_path)
-            return map
-        map = project_map(map_root_dir)
-        config['result'] = {'files_map': map}
-        return config
-
-    def web_search(self, config):
-        from ddgs import DDGS
-        ################################################################################################################
-        query = config['query']
-        num_results = config['num_results']
-        ################################################################################################################
-        with DDGS() as ddgs:
-            results = ddgs.text(query, max_results=num_results, region="wt-wt")
-        config['result'] = results
-        return config
-
-    def browse_url(self, config):
-        from eigenlib.utils.parallel_io import ParallelIO
-        from eigenlib.LLM.sources_parser import SourcesParserClass
-        ################################################################################################################
-        urls = config['urls']
-        ################################################################################################################
-        if isinstance(urls, str):
-            urls = [urls]
-        sp = SourcesParserClass()
-        result = ParallelIO().run_in_parallel(sp.run, {}, {'file_path': urls}, max_workers=len(urls), use_processes=False)
-        config['result'] = {'summary': '\n'.join(result)}
         return config
 
     def vector_database(self, config):
@@ -397,7 +341,7 @@ if __name__ == "__main__":
     main = Main()
     config = Config()
     #main.standby(config.standby())
-    main.real_time_transcriptor(config.real_time_transcriptor())
+    #main.real_time_transcriptor(config.real_time_transcriptor())
     #main.call_to_notion(config.call_to_notion())
     #main.smartwatch_notes(config.smartwatch_notes())
     #main.computer_use_automation(config.computer_use_automations())

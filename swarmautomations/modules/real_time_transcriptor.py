@@ -4,13 +4,12 @@ import time
 from datetime import datetime
 from typing import Optional
 
-import keyboard  # pip install keyboard
-import pyautogui  # pip install pyautogui
-import pyperclip  # pip install pyperclip
+import keyboard
+import pyautogui
+import pyperclip
 
 from eigenlib.utils.audio_io import AudioIO
 from eigenlib.audio.oai_whisper_stt import OAIWhisperSTTClass
-
 
 class RealTimeTranscriptor:
     """Transcripción de voz con toggle usando la tecla º.
